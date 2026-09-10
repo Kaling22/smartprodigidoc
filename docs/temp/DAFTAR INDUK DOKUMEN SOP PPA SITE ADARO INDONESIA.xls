@@ -1,0 +1,139 @@
+﻿<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body  { font-family: Arial, sans-serif; font-size: 10pt; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #000; padding: 4px 8px; vertical-align: middle; }
+  .judul    { font-size: 13pt; font-weight: bold; text-align: center; border: none; background: none; }
+  .sub-judul { font-size: 10pt; text-align: center; border: none; background: none; }
+  th { background-color: #D6DCE4; font-weight: bold; text-align: center; }
+  .center { text-align: center; }
+  .kosong { border: none; background: none; }
+</style>
+</head>
+<body>
+<table>
+  
+  <tr>
+    <td colspan="15" class="judul">DAFTAR INDUK DOKUMEN SOP</td>
+  </tr>
+  <tr>
+    <td colspan="15" class="sub-judul">PT PUTRA PERKASA ABADI SITE ADARO INDONESIA</td>
+  </tr>
+  <tr>
+    <td colspan="15" class="kosong">&nbsp;</td>
+  </tr>
+
+  
+  <thead>
+    <tr>
+      <th rowspan="2" style="width:40px">No</th>
+      <th rowspan="2" style="width:180px">Nomor Dokumen</th>
+      <th rowspan="2">Judul Dokumen</th>
+              <th colspan="5">Edisi 1</th>
+              <th colspan="5">Edisi 2</th>
+            <th rowspan="2" style="width:110px">Tanggal Efektif</th>
+      <th rowspan="2" style="width:130px">Tanggal Terakhir Revisi</th>
+    </tr>
+    <tr>
+                        <th style="width:70px">0</th>
+                  <th style="width:70px">1</th>
+                  <th style="width:70px">2</th>
+                  <th style="width:70px">3</th>
+                  <th style="width:70px">4</th>
+                                <th style="width:70px">0</th>
+                  <th style="width:70px">1</th>
+                  <th style="width:70px">2</th>
+                  <th style="width:70px">3</th>
+                  <th style="width:70px">4</th>
+                  </tr>
+  </thead>
+
+  
+  <tbody>
+          <tr>
+        <td class="center">1</td>
+        <td>PPA-ADRO-SOP-ICTMD-01</td>
+        <td>Prosedur backup</td>
+                              
+            <td class="center">22/08/2026</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                                        
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                          <td class="center">22/08/2026</td>
+        <td class="center">22/08/2026</td>
+      </tr>
+          <tr>
+        <td class="center">2</td>
+        <td>PPA-ADRO-SOP-ICTMD-02</td>
+        <td>Testing AI</td>
+                              
+            <td class="center">22/08/2026</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                                        
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                          <td class="center">22/08/2026</td>
+        <td class="center">22/08/2026</td>
+      </tr>
+          <tr>
+        <td class="center">3</td>
+        <td>PPA-ADRO-SOP-ICTMD-10</td>
+        <td>Testing Existing</td>
+                              
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                                        
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">-</td>
+                      
+            <td class="center">14/08/2026</td>
+                          <td class="center">14/08/2026</td>
+        <td class="center">14/08/2026</td>
+      </tr>
+      </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,361 @@
+@import 'tailwindcss';
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/dm-sans";
+@import "@fontsource-variable/inter";
+@import 'quill/dist/quill.snow.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme inline {
+    --font-heading: 'Inter Variable', sans-serif;
+    --font-sans: 'DM Sans Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0.008 326);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0.008 326);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0.008 326);
+    --primary: oklch(0.514 0.222 16.935);
+    --primary-foreground: oklch(0.969 0.015 12.422);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.96 0.003 325.6);
+    --muted-foreground: oklch(0.542 0.034 322.5);
+    --accent: oklch(0.96 0.003 325.6);
+    --accent-foreground: oklch(0.212 0.019 322.12);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0.005 325.62);
+    --input: oklch(0.922 0.005 325.62);
+    --ring: oklch(0.711 0.019 323.02);
+    --chart-1: oklch(0.808 0.114 19.571);
+    --chart-2: oklch(0.637 0.237 25.331);
+    --chart-3: oklch(0.577 0.245 27.325);
+    --chart-4: oklch(0.505 0.213 27.518);
+    --chart-5: oklch(0.444 0.177 26.899);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0.008 326);
+    --sidebar-primary: oklch(0.586 0.253 17.585);
+    --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
+    --sidebar-accent: oklch(0.96 0.003 325.6);
+    --sidebar-accent-foreground: oklch(0.212 0.019 322.12);
+    --sidebar-border: oklch(0.922 0.005 325.62);
+    --sidebar-ring: oklch(0.711 0.019 323.02);
+}
+
+.dark {
+    --background: oklch(0.145 0.008 326);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.212 0.019 322.12);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.212 0.019 322.12);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.455 0.188 13.697);
+    --primary-foreground: oklch(0.969 0.015 12.422);
+    --secondary: oklch(0.274 0.006 286.033);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.263 0.024 320.12);
+    --muted-foreground: oklch(0.711 0.019 323.02);
+    --accent: oklch(0.263 0.024 320.12);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.542 0.034 322.5);
+    --chart-1: oklch(0.808 0.114 19.571);
+    --chart-2: oklch(0.637 0.237 25.331);
+    --chart-3: oklch(0.577 0.245 27.325);
+    --chart-4: oklch(0.505 0.213 27.518);
+    --chart-5: oklch(0.444 0.177 26.899);
+    --sidebar: oklch(0.21 0.006 285.885);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.645 0.246 16.439);
+    --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
+    --sidebar-accent: oklch(0.263 0.024 320.12);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.542 0.034 322.5);
+}
+
+/* ==========================================================================
+   Palet grafik pratinjau — REDESAIN-UI-V2 §6
+   ==========================================================================
+
+   `--chart-1..5` di atas adalah lima langkah dari SATU hue merah (19–27°).
+   Itu rampa SEQUENTIAL yang dipakai untuk peran CATEGORICAL: dua deret di
+   grafik tren hanya dibedakan terang-gelap, dan urutan angkanya jadi terbaca
+   seolah punya arah. Diganti lima hue berbeda yang tetap DIPIMPIN merah PPA
+   (`--chart-1` = #C8102E, identitasnya tak bergeser sebyte pun).
+
+   ANGKA §6 TIDAK TERPAKAI. Dokumen menulis pasangan terburuk ΔE 18.4 (deutan)
+   untuk usulan sian/oker/ungu/hijau; validator yang dijalankan ulang atas
+   permukaan kartu proyek yang sebenarnya mengembalikan **4.1** — merah dan
+   oker adalah pasangan yang persis dikacaukan deuteranop, dan pita
+   lightness-nya cuma 0.082 sehingga tak ada kanal kedua yang menolong.
+   Alatnya dikalibrasi dulu dengan Okabe–Ito (palet rancangan-CVD, mencetak
+   deutan 12.5 / tritan 12.1), jadi ambangnya 12 dan angka 4.1 itu memang
+   jatuh, bukan alat yang terlalu galak.
+
+   Yang dipasang di bawah lolos keenam pemeriksaan di KEDUA mode:
+
+     terang  deutan 16.1 · protan 17.3 · tritan 16.0 · normal 25.9
+     gelap   deutan 13.9 · protan 15.0 · tritan 14.8 · normal 24.4
+
+   Varian gelap adalah HUE DAN CHROMA YANG SAMA dengan varian terang, hanya
+   lightness-nya dinaikkan tetap +0.10 OKLab. Disengaja: kalau tiap mode
+   memilih warnanya sendiri lewat pengoptimum, `chart-3` bisa jingga di terang
+   dan kuning di gelap — mengganti tema akan mengecat ulang legenda, dan
+   identitas deret adalah hal yang paling tak boleh goyah di grafik.
+
+   Berlingkup `.ui-v2` supaya 41 halaman lama tak ikut berubah; Tranche 4
+   memindahkannya ke `:root` / `.dark`.
+
+   SLOT 6 DAN 7 (ditambah rencana pra-produksi butir 9, 2 September 2026).
+   Kartu "Sebaran per Departemen" mewarnai TUJUH departemen, dan tujuh warna
+   tak bisa datang dari lima slot. Keduanya dicari dengan validator yang SAMA
+   (Machado 2009 severity 1.0 + ΔE CIEDE2000, dikalibrasi ulang sampai palet
+   lima slot di atas mencetak angka yang persis tertulis di §6), dengan lima
+   slot lama DIKUNCI — identitas deret grafik yang sudah dipakai tak boleh
+   bergeser demi kartu baru. Lantai chroma 0.10, lantai kontras 3.0 terhadap
+   permukaan kartu di kedua mode.
+
+     terang  deutan 14.8 · protan 15.0 · tritan 16.0 · normal 18.7
+     gelap   deutan 13.9 · protan 15.0 · tritan 14.8 · normal 18.8
+
+   Ketujuhnya masih di atas langit-langit praktis Okabe–Ito (12), meski
+   angkanya memang turun dari lima slot — itu harga tujuh kategori, dan yang
+   dibayar keleluasaan, bukan ambangnya. Varian gelapnya mengikuti aturan yang
+   sama: hue dan chroma IDENTIK, lightness +0.10 OKLab.
+
+   TIDAK IKUT BERUBAH: hex `Document::STATUS_META` (warna status) dan
+   `DocumentType::RUPA` (warna donat sebaran) — keduanya milik server dan
+   dipakai apa adanya (CLAUDE.md §13). Warna status adalah palet CADANGAN; ia
+   tak boleh dipinjam jadi "deret ke-6".
+*/
+.ui-v2 {
+    --chart-1: #C8102E; /* merah PPA   */
+    --chart-2: #187082; /* teal        */
+    --chart-3: #DD7723; /* jingga      */
+    --chart-4: #7D76F6; /* ungu-biru   */
+    --chart-5: #27A680; /* hijau       */
+    --chart-6: #7E384D; /* wine        */
+    --chart-7: #3D31C7; /* indigo      */
+    /* TEMUAN-F8 F4b: `--input` bawaan (L 0.922) nyaris menyatu dengan
+       `--card`/`--background` putih — `bg-input/30` jadi tak terbaca sebagai
+       bidang isian. Diturunkan terangnya, HUE/CHROMA sama. */
+    --input: oklch(0.87 0.006 325.62);
+}
+
+.dark .ui-v2 {
+    --chart-1: #EC414B;
+    --chart-2: #3E8EA1;
+    --chart-3: #FE984E;
+    --chart-4: #9C9DFF;
+    --chart-5: #50C69E;
+    --chart-6: #9E5469;
+    --chart-7: #5454EA;
+    --input: oklch(1 0 0 / 24%);
+}
+
+/* TEMUAN-F8 F4b: kotak isian yang readonly/disabled dibedakan lewat BENTUK
+   (garis putus + latar abu), bukan cuma opacity — pembeda itu bertahan di
+   mode gelap dan bagi penderita buta warna. `ui-maia/input.tsx` &
+   `textarea.tsx` HARAM disunting (CLAUDE.md §4), jadi lewat CSS berlingkup
+   `.ui-v2` di sini. */
+.ui-v2 [data-slot='input'][readonly],
+.ui-v2 [data-slot='input']:disabled,
+.ui-v2 [data-slot='textarea'][readonly],
+.ui-v2 [data-slot='textarea']:disabled {
+    background: var(--muted);
+    border-style: dashed;
+}
+
+/* Garis merah berjalan di puncak kartu wizard selagi tombol "Revisi" menyusun
+   catatan (indeterminate — panjangnya tak berarti apa-apa, ia cuma bukti
+   permintaannya sedang jalan). Warnanya `bg-primary` dari TSX, bukan dari sini:
+   yang di sini cuma gerakannya, karena `@keyframes` tak punya padanan utilitas
+   Tailwind. Lingkupnya `.ui-v2` mengikuti aturan blok di atas.
+   `prefers-reduced-motion` mematikan geraknya dan menyisakan garis diam. */
+@keyframes garis-lari {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(400%);
+    }
+}
+
+.ui-v2 .garis-lari {
+    animation: garis-lari 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-v2 .garis-lari {
+        animation: none;
+        width: 100%;
+    }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+}
+
+/*
+| ============================================================================
+| KOLOM RICH TEXT (Quill "snow") — bekas `.pp-rt` di layouts/app.blade.php
+| ============================================================================
+|
+| Quill menuliskan warnanya sendiri (#fff / #ccc / #444) langsung di berkas
+| snow, jadi ketiga permukaannya harus disebut ulang — kalau tidak, editor
+| menyala putih di tengah halaman gelap. Yang dipakai di sini token tema
+| shadcn, sehingga terang & gelap ikut sendiri tanpa satu pun aturan @media.
+|
+| Isi editor & tampilan BACA (halaman Tinjau) memakai aturan yang SAMA lewat
+| `.pp-rt-isi`, supaya yang dilihat penyusun = yang dilihat peninjau. Angkanya
+| sengaja bukan salinan angka cetak: di layar satuannya rem & px, di PDF pt —
+| yang dijaga sama adalah BENTUKNYA (kutipan menjorok & miring, gambar tak
+| melebihi lebar kolom).
+*/
+.pp-rt .ql-toolbar.ql-snow,
+.pp-rt .ql-container.ql-snow {
+    border-color: var(--border);
+}
+.pp-rt .ql-toolbar.ql-snow {
+    background: var(--muted);
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+.pp-rt .ql-container.ql-snow {
+    background: var(--background);
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+.pp-rt .ql-editor {
+    color: var(--foreground);
+    min-height: 7rem;
+}
+.pp-rt .ql-editor.ql-blank::before {
+    color: var(--muted-foreground);
+    font-style: normal;
+}
+.pp-rt .ql-snow .ql-stroke { stroke: var(--foreground); }
+.pp-rt .ql-snow .ql-fill { fill: var(--foreground); }
+/*
+| Ukuran tombol toolbar DIPATOK, bukan `auto`.
+|
+| Quill MENIMPA `innerHTML` tiap tombol ber-kelas `ql-*` dengan SVG-nya
+| sendiri (themes/base.js buildButtons) — ikon React yang kita gambar cuma
+| bertahan sampai Quill selesai dimuat. SVG pengganti itu ditata
+| quill.snow.css sebagai `float:left; height:100%`. Float tak menyumbang
+| tinggi ke induknya, jadi `height:auto` di sini membuat tombolnya KOLAPS
+| ke nol dan seluruh toolbar tampak hilang. Karena itu tinggi & lebarnya
+| ditulis eksplisit, dan svg-nya dilepas dari float.
+*/
+.pp-rt .ql-toolbar.ql-snow button {
+    color: var(--muted-foreground);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0.25rem;
+    border-radius: calc(var(--radius) - 4px);
+}
+.pp-rt .ql-toolbar.ql-snow button svg {
+    float: none;
+    width: 100%;
+    height: 100%;
+}
+.pp-rt .ql-toolbar.ql-snow button:hover,
+.pp-rt .ql-toolbar.ql-snow button.ql-active {
+    background: color-mix(in oklab, var(--primary) 18%, transparent);
+    color: var(--primary);
+}
+
+/* Ditandai validasiWajib() — sepadan dgn aria-invalid pada input biasa. */
+.pp-rt-invalid .ql-toolbar.ql-snow,
+.pp-rt-invalid .ql-container.ql-snow {
+    border-color: var(--destructive);
+}
+
+.pp-rt .ql-editor blockquote,
+.pp-rt-isi blockquote {
+    border-left: 3px solid var(--primary);
+    padding-left: 0.8rem;
+    margin-left: 0;
+    font-style: italic;
+    color: var(--muted-foreground);
+}
+
+/* Gambar SELALU sebaris sendiri — tak pernah berdampingan dgn kalimat. Blot
+   `image` Quill bersifat inline, jadi tanpa display:block ia duduk di samping
+   teks; di PDF ia memang sudah jadi baris tabel tersendiri, dan editor harus
+   memperlihatkan hal yang sama supaya penyusun tak terkejut saat mencetak. */
+.pp-rt .ql-editor img,
+.pp-rt-isi img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.45rem 0;
+    border-radius: 0.4rem;
+}
+
+.pp-rt-isi { font-size: 0.875rem; line-height: 1.65; }
+.pp-rt-isi p { margin-bottom: 0.35rem; }
+.pp-rt-isi ol,
+.pp-rt-isi ul { margin-bottom: 0.35rem; padding-left: 1.4rem; }
+.pp-rt-isi > :last-child { margin-bottom: 0; }
+

@@ -1,0 +1,1604 @@
+{
+    "dibuat": "2026-09-07 11:48:48",
+    "sebab": "Puing audit_logs dari penggabungan basis data 2026-09-06.",
+    "kriteria": {
+        "a": 163,
+        "b": 9,
+        "c": 5
+    },
+    "baris": [
+        {
+            "id": 1587,
+            "user_id": 5,
+            "document_id": 1161,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-01\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":4}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 11:18:25"
+        },
+        {
+            "id": 1588,
+            "user_id": 5,
+            "document_id": 1162,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-FK-ICTMD-10\",\"type\":\"FK\",\"department\":\"ICTMD\",\"edisi\":2,\"no_revisi\":3}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 11:18:59"
+        },
+        {
+            "id": 1600,
+            "user_id": 5,
+            "document_id": 1163,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-02\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 11:38:57"
+        },
+        {
+            "id": 1604,
+            "user_id": 5,
+            "document_id": 1163,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 11:40:55"
+        },
+        {
+            "id": 1605,
+            "user_id": 5,
+            "document_id": 1164,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-03\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:02:28"
+        },
+        {
+            "id": 1606,
+            "user_id": 5,
+            "document_id": 1164,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:02:57"
+        },
+        {
+            "id": 1607,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:18:52"
+        },
+        {
+            "id": 1608,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:18:56"
+        },
+        {
+            "id": 1609,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:19:01"
+        },
+        {
+            "id": 1610,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:19:04"
+        },
+        {
+            "id": 1611,
+            "user_id": 5,
+            "document_id": 1163,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":1,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:19:34"
+        },
+        {
+            "id": 1612,
+            "user_id": 5,
+            "document_id": 1164,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":1,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:19:42"
+        },
+        {
+            "id": 1613,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:20:43"
+        },
+        {
+            "id": 1614,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:20:46"
+        },
+        {
+            "id": 1615,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:20:48"
+        },
+        {
+            "id": 1616,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:20:51"
+        },
+        {
+            "id": 1617,
+            "user_id": 5,
+            "document_id": 1163,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":2,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:21:14"
+        },
+        {
+            "id": 1618,
+            "user_id": 5,
+            "document_id": 1164,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":2,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 12:21:24"
+        },
+        {
+            "id": 1623,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 15:05:39"
+        },
+        {
+            "id": 1624,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 15:05:45"
+        },
+        {
+            "id": 1625,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 15:05:48"
+        },
+        {
+            "id": 1626,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-13 15:05:51"
+        },
+        {
+            "id": 1630,
+            "user_id": 5,
+            "document_id": 1165,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-04\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.75",
+            "created_at": "2026-08-18 14:22:29"
+        },
+        {
+            "id": 1632,
+            "user_id": 5,
+            "document_id": 1166,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-05\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 11:39:06"
+        },
+        {
+            "id": 1638,
+            "user_id": 5,
+            "document_id": 1167,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-01\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:55:04"
+        },
+        {
+            "id": 1643,
+            "user_id": 5,
+            "document_id": 1167,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:58:33"
+        },
+        {
+            "id": 1644,
+            "user_id": 5,
+            "document_id": 1168,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-02\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:58:40"
+        },
+        {
+            "id": 1645,
+            "user_id": 5,
+            "document_id": 1168,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:59:02"
+        },
+        {
+            "id": 1646,
+            "user_id": 5,
+            "document_id": 1169,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-06\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:59:09"
+        },
+        {
+            "id": 1647,
+            "user_id": 5,
+            "document_id": 1170,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-03\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:59:17"
+        },
+        {
+            "id": 1648,
+            "user_id": 5,
+            "document_id": 1170,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:59:36"
+        },
+        {
+            "id": 1649,
+            "user_id": 5,
+            "document_id": 1171,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-04\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 13:59:46"
+        },
+        {
+            "id": 1650,
+            "user_id": 5,
+            "document_id": 1171,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:00:25"
+        },
+        {
+            "id": 1653,
+            "user_id": 7,
+            "document_id": 1171,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:01:07"
+        },
+        {
+            "id": 1654,
+            "user_id": 7,
+            "document_id": 1171,
+            "action": "document.reassign_review",
+            "meta_json": "{\"dari\":\"MARCIO CALVIN ROHI\",\"ke\":\"GL_KEDUA\",\"alasan\":\"test\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:03:15"
+        },
+        {
+            "id": 1657,
+            "user_id": 667,
+            "document_id": 1171,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:04:31"
+        },
+        {
+            "id": 1658,
+            "user_id": 7,
+            "document_id": 1170,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:12:31"
+        },
+        {
+            "id": 1659,
+            "user_id": 7,
+            "document_id": 1170,
+            "action": "document.reassign_review",
+            "meta_json": "{\"dari\":\"MARCIO CALVIN ROHI\",\"ke\":\"GL_KEDUA\",\"alasan\":\"males\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:12:38"
+        },
+        {
+            "id": 1667,
+            "user_id": 5,
+            "document_id": 1172,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1162,\"no_revisi\":3}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:46:34"
+        },
+        {
+            "id": 1668,
+            "user_id": 5,
+            "document_id": 1163,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":3,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:47:32"
+        },
+        {
+            "id": 1669,
+            "user_id": 5,
+            "document_id": 1164,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":3,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:47:48"
+        },
+        {
+            "id": 1672,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:48:13"
+        },
+        {
+            "id": 1673,
+            "user_id": 11,
+            "document_id": 1164,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:48:16"
+        },
+        {
+            "id": 1674,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:48:17"
+        },
+        {
+            "id": 1675,
+            "user_id": 11,
+            "document_id": 1163,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:48:21"
+        },
+        {
+            "id": 1678,
+            "user_id": 2,
+            "document_id": 1163,
+            "action": "document.md_approve",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:53:04"
+        },
+        {
+            "id": 1679,
+            "user_id": 2,
+            "document_id": 1164,
+            "action": "document.md_approve",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:53:09"
+        },
+        {
+            "id": 1682,
+            "user_id": 15,
+            "document_id": 1164,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-02\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:53:34"
+        },
+        {
+            "id": 1683,
+            "user_id": 15,
+            "document_id": 1163,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-03\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:53:39"
+        },
+        {
+            "id": 1686,
+            "user_id": 5,
+            "document_id": 1173,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1163,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:55:01"
+        },
+        {
+            "id": 1687,
+            "user_id": 5,
+            "document_id": 1174,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1164,\"no_revisi\":0}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:55:09"
+        },
+        {
+            "id": 1688,
+            "user_id": 5,
+            "document_id": 1174,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":1}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:55:45"
+        },
+        {
+            "id": 1691,
+            "user_id": 11,
+            "document_id": 1174,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:56:08"
+        },
+        {
+            "id": 1692,
+            "user_id": 11,
+            "document_id": 1174,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:56:11"
+        },
+        {
+            "id": 1695,
+            "user_id": 2,
+            "document_id": 1174,
+            "action": "document.md_approve",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:56:29"
+        },
+        {
+            "id": 1698,
+            "user_id": 15,
+            "document_id": 1174,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-03\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:56:44"
+        },
+        {
+            "id": 1701,
+            "user_id": 5,
+            "document_id": 1175,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1174,\"no_revisi\":1}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:57:11"
+        },
+        {
+            "id": 1702,
+            "user_id": 5,
+            "document_id": 1175,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":2}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:57:51"
+        },
+        {
+            "id": 1705,
+            "user_id": 11,
+            "document_id": 1175,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:58:18"
+        },
+        {
+            "id": 1706,
+            "user_id": 11,
+            "document_id": 1175,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 14:58:23"
+        },
+        {
+            "id": 1715,
+            "user_id": 2,
+            "document_id": 1175,
+            "action": "document.md_approve",
+            "meta_json": null,
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:11:30"
+        },
+        {
+            "id": 1720,
+            "user_id": 15,
+            "document_id": 1175,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-03\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:12:11"
+        },
+        {
+            "id": 1723,
+            "user_id": 5,
+            "document_id": 1175,
+            "action": "document.nonaktif_ajukan",
+            "meta_json": "{\"oleh\":\"ANGGA MARGI SAPUTRO\",\"alasan\":\"mati\",\"tahapan\":[\"sh\",\"md\",\"pjo\"]}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:36:11"
+        },
+        {
+            "id": 1726,
+            "user_id": 11,
+            "document_id": 1175,
+            "action": "document.nonaktif_setuju",
+            "meta_json": "{\"oleh\":\"ARISAL FARZAN\",\"tahap\":\"sh\",\"berikut\":\"md\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:36:29"
+        },
+        {
+            "id": 1729,
+            "user_id": 2,
+            "document_id": 1175,
+            "action": "document.nonaktif_setuju",
+            "meta_json": "{\"oleh\":\"Management Development\",\"tahap\":\"md\",\"berikut\":\"pjo\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:36:49"
+        },
+        {
+            "id": 1732,
+            "user_id": 15,
+            "document_id": 1175,
+            "action": "document.nonaktif_setuju",
+            "meta_json": "{\"oleh\":\"WAHYU BINUKO\",\"tahap\":\"pjo\",\"berikut\":null}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:37:11"
+        },
+        {
+            "id": 1733,
+            "user_id": 15,
+            "document_id": 1175,
+            "action": "document.nonaktif_selesai",
+            "meta_json": "{\"nomor_dilepas\":\"PPA-ADRO-SOP-ICTMD-03\"}",
+            "ip_address": "10.7.110.79",
+            "created_at": "2026-08-19 15:37:11"
+        },
+        {
+            "id": 1745,
+            "user_id": 5,
+            "document_id": 1173,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":1}",
+            "ip_address": "10.7.110.83",
+            "created_at": "2026-08-20 09:11:14"
+        },
+        {
+            "id": 1748,
+            "user_id": 1,
+            "document_id": 1162,
+            "action": "document.cancel_revision_b",
+            "meta_json": null,
+            "ip_address": "10.7.110.83",
+            "created_at": "2026-08-20 09:12:21"
+        },
+        {
+            "id": 1749,
+            "user_id": 1,
+            "document_id": 1163,
+            "action": "document.cancel_revision_b",
+            "meta_json": null,
+            "ip_address": "10.7.110.83",
+            "created_at": "2026-08-20 09:12:24"
+        },
+        {
+            "id": 1754,
+            "user_id": 5,
+            "document_id": 1176,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-01\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.83",
+            "created_at": "2026-08-20 14:28:39"
+        },
+        {
+            "id": 1755,
+            "user_id": 5,
+            "document_id": 1176,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.83",
+            "created_at": "2026-08-20 14:29:23"
+        },
+        {
+            "id": 1768,
+            "user_id": 5,
+            "document_id": 1177,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-09o\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":3}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-22 00:14:49"
+        },
+        {
+            "id": 1769,
+            "user_id": 5,
+            "document_id": 1178,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1177,\"no_revisi\":3}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-22 00:15:56"
+        },
+        {
+            "id": 1810,
+            "user_id": 5,
+            "document_id": 1179,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-01\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 10:37:53"
+        },
+        {
+            "id": 1823,
+            "user_id": 5,
+            "document_id": 1179,
+            "action": "document.delete",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:34:57"
+        },
+        {
+            "id": 1824,
+            "user_id": 5,
+            "document_id": 1180,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-01\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:35:14"
+        },
+        {
+            "id": 1825,
+            "user_id": 5,
+            "document_id": 1180,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:39:32"
+        },
+        {
+            "id": 1828,
+            "user_id": 11,
+            "document_id": 1180,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:39:55"
+        },
+        {
+            "id": 1829,
+            "user_id": 11,
+            "document_id": 1180,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:40:02"
+        },
+        {
+            "id": 1830,
+            "user_id": 11,
+            "document_id": 1180,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:43:13"
+        },
+        {
+            "id": 1832,
+            "user_id": 5,
+            "document_id": 1181,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-02\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:49:54"
+        },
+        {
+            "id": 1833,
+            "user_id": 5,
+            "document_id": 1181,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:53:29"
+        },
+        {
+            "id": 1834,
+            "user_id": 5,
+            "document_id": 1182,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-01\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 12:54:46"
+        },
+        {
+            "id": 1835,
+            "user_id": 5,
+            "document_id": 1182,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:05:23"
+        },
+        {
+            "id": 1836,
+            "user_id": 11,
+            "document_id": 1180,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":9}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:09:21"
+        },
+        {
+            "id": 1837,
+            "user_id": 5,
+            "document_id": 1183,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-03\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:09:37"
+        },
+        {
+            "id": 1838,
+            "user_id": 11,
+            "document_id": 1181,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:10:06"
+        },
+        {
+            "id": 1839,
+            "user_id": 11,
+            "document_id": 1181,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":9}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:10:37"
+        },
+        {
+            "id": 1844,
+            "user_id": 7,
+            "document_id": 1182,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:13:24"
+        },
+        {
+            "id": 1845,
+            "user_id": 7,
+            "document_id": 1182,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:18:11"
+        },
+        {
+            "id": 1850,
+            "user_id": 11,
+            "document_id": 1181,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":10}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:20:48"
+        },
+        {
+            "id": 1854,
+            "user_id": 5,
+            "document_id": 1183,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:32:05"
+        },
+        {
+            "id": 1855,
+            "user_id": 5,
+            "document_id": 1184,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-04\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:32:20"
+        },
+        {
+            "id": 1856,
+            "user_id": 5,
+            "document_id": 1184,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:33:47"
+        },
+        {
+            "id": 1859,
+            "user_id": 11,
+            "document_id": 1184,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:34:13"
+        },
+        {
+            "id": 1860,
+            "user_id": 11,
+            "document_id": 1184,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":8}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:34:45"
+        },
+        {
+            "id": 1861,
+            "user_id": 11,
+            "document_id": 1184,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:35:22"
+        },
+        {
+            "id": 1862,
+            "user_id": 11,
+            "document_id": 1183,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:35:25"
+        },
+        {
+            "id": 1863,
+            "user_id": 11,
+            "document_id": 1183,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:35:29"
+        },
+        {
+            "id": 1866,
+            "user_id": 2,
+            "document_id": 1183,
+            "action": "document.md_approve",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:35:53"
+        },
+        {
+            "id": 1867,
+            "user_id": 2,
+            "document_id": 1184,
+            "action": "document.md_approve",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:36:00"
+        },
+        {
+            "id": 1870,
+            "user_id": 15,
+            "document_id": 1184,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-01\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:36:24"
+        },
+        {
+            "id": 1871,
+            "user_id": 15,
+            "document_id": 1183,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-02\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:36:29"
+        },
+        {
+            "id": 1878,
+            "user_id": 666,
+            "document_id": 1183,
+            "action": "feedback.create",
+            "meta_json": "{\"feedback_number\":\"MSK-2026-0001\"}",
+            "ip_address": "10.7.110.68",
+            "created_at": "2026-08-22 13:40:29"
+        },
+        {
+            "id": 1879,
+            "user_id": 666,
+            "document_id": 1184,
+            "action": "feedback.create",
+            "meta_json": "{\"feedback_number\":\"MSK-2026-0002\"}",
+            "ip_address": "10.7.110.68",
+            "created_at": "2026-08-22 13:40:59"
+        },
+        {
+            "id": 1884,
+            "user_id": 5,
+            "document_id": 1185,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-10\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":2}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:45:51"
+        },
+        {
+            "id": 1885,
+            "user_id": 5,
+            "document_id": 1186,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1185,\"no_revisi\":4}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:48:18"
+        },
+        {
+            "id": 1886,
+            "user_id": 5,
+            "document_id": 1187,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-02\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:49:10"
+        },
+        {
+            "id": 1887,
+            "user_id": 5,
+            "document_id": 1187,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 13:50:41"
+        },
+        {
+            "id": 1894,
+            "user_id": 7,
+            "document_id": 1187,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:01:28"
+        },
+        {
+            "id": 1895,
+            "user_id": 7,
+            "document_id": 1187,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:01:38"
+        },
+        {
+            "id": 1896,
+            "user_id": 7,
+            "document_id": 1182,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":11}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:03:48"
+        },
+        {
+            "id": 1899,
+            "user_id": 5,
+            "document_id": 1188,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-05\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:13:37"
+        },
+        {
+            "id": 1900,
+            "user_id": 5,
+            "document_id": 1188,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:14:21"
+        },
+        {
+            "id": 1901,
+            "user_id": 5,
+            "document_id": 1189,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-06\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:22:00"
+        },
+        {
+            "id": 1902,
+            "user_id": 5,
+            "document_id": 1189,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-22 14:22:51"
+        },
+        {
+            "id": 1908,
+            "user_id": 5,
+            "document_id": 1190,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-07\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.147.254",
+            "created_at": "2026-08-22 14:30:00"
+        },
+        {
+            "id": 1909,
+            "user_id": 5,
+            "document_id": 1190,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.7.147.254",
+            "created_at": "2026-08-22 14:30:35"
+        },
+        {
+            "id": 1911,
+            "user_id": 5,
+            "document_id": 1191,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-08\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 14:46:59"
+        },
+        {
+            "id": 1912,
+            "user_id": 5,
+            "document_id": 1191,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 14:47:35"
+        },
+        {
+            "id": 1917,
+            "user_id": 7,
+            "document_id": 1187,
+            "action": "document.review_approve",
+            "meta_json": null,
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 14:49:43"
+        },
+        {
+            "id": 1919,
+            "user_id": 11,
+            "document_id": 1187,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-JSA-ICTMD-01\"}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 14:50:05"
+        },
+        {
+            "id": 1925,
+            "user_id": 11,
+            "document_id": 1180,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":9}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 14:56:40"
+        },
+        {
+            "id": 1927,
+            "user_id": 5,
+            "document_id": 1192,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-010\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:03:58"
+        },
+        {
+            "id": 1928,
+            "user_id": 5,
+            "document_id": 1192,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:08:56"
+        },
+        {
+            "id": 1930,
+            "user_id": 11,
+            "document_id": 1192,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:10:03"
+        },
+        {
+            "id": 1931,
+            "user_id": 11,
+            "document_id": 1192,
+            "action": "document.ai_review",
+            "meta_json": "{\"findings\":9}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:10:53"
+        },
+        {
+            "id": 1932,
+            "user_id": 11,
+            "document_id": 1192,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:13:05"
+        },
+        {
+            "id": 1938,
+            "user_id": 5,
+            "document_id": 1193,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-03\",\"type\":\"JSA\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:16:09"
+        },
+        {
+            "id": 1939,
+            "user_id": 5,
+            "document_id": 1193,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:19:45"
+        },
+        {
+            "id": 1942,
+            "user_id": 7,
+            "document_id": 1193,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:20:33"
+        },
+        {
+            "id": 1943,
+            "user_id": 7,
+            "document_id": 1193,
+            "action": "document.review_approve",
+            "meta_json": null,
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:21:53"
+        },
+        {
+            "id": 1944,
+            "user_id": 11,
+            "document_id": 1193,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-JSA-ICTMD-02\"}",
+            "ip_address": "10.121.143.9",
+            "created_at": "2026-08-22 15:22:39"
+        },
+        {
+            "id": 2017,
+            "user_id": 5,
+            "document_id": 1217,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-01\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.86",
+            "created_at": "2026-08-27 08:41:53"
+        },
+        {
+            "id": 2020,
+            "user_id": 1,
+            "document_id": 1218,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-02\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.86",
+            "created_at": "2026-08-27 09:17:29"
+        },
+        {
+            "id": 2023,
+            "user_id": 5,
+            "document_id": 1218,
+            "action": "masukan_sejawat.kirim",
+            "meta_json": "{\"catatan\":2}",
+            "ip_address": "10.7.110.86",
+            "created_at": "2026-08-27 09:19:07"
+        },
+        {
+            "id": 2028,
+            "user_id": 5,
+            "document_id": 1219,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-03\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.86",
+            "created_at": "2026-08-27 09:38:15"
+        },
+        {
+            "id": 2030,
+            "user_id": 5,
+            "document_id": 1220,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-04\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.86",
+            "created_at": "2026-08-27 12:05:56"
+        },
+        {
+            "id": 2033,
+            "user_id": 5,
+            "document_id": 1222,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-05\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "192.168.100.187",
+            "created_at": "2026-08-27 20:31:53"
+        },
+        {
+            "id": 2049,
+            "user_id": 5,
+            "document_id": 1223,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-02\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-28 12:09:16"
+        },
+        {
+            "id": 2050,
+            "user_id": 5,
+            "document_id": 1224,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-IK-ICTMD-01\",\"type\":\"IK\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-28 12:12:55"
+        },
+        {
+            "id": 2051,
+            "user_id": 5,
+            "document_id": 1225,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SP-ICTMD-01\",\"type\":\"SP\",\"department\":\"ICTMD\"}",
+            "ip_address": "10.7.110.72",
+            "created_at": "2026-08-28 12:15:25"
+        },
+        {
+            "id": 2052,
+            "user_id": null,
+            "document_id": 1226,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-FK-ICTMD-99\",\"type\":\"FK\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":0}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-28 12:40:02"
+        },
+        {
+            "id": 2062,
+            "user_id": 1,
+            "document_id": 1228,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-03\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-30 03:12:35"
+        },
+        {
+            "id": 2072,
+            "user_id": null,
+            "document_id": 1228,
+            "action": "document.delete",
+            "meta_json": null,
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-30 10:16:44"
+        },
+        {
+            "id": 2076,
+            "user_id": 1,
+            "document_id": 1239,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-03\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 07:21:36"
+        },
+        {
+            "id": 2081,
+            "user_id": 5,
+            "document_id": 1240,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-04\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:42:14"
+        },
+        {
+            "id": 2082,
+            "user_id": 5,
+            "document_id": 1240,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:43:06"
+        },
+        {
+            "id": 2083,
+            "user_id": 5,
+            "document_id": 1225,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:43:37"
+        },
+        {
+            "id": 2084,
+            "user_id": 5,
+            "document_id": 1224,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:43:54"
+        },
+        {
+            "id": 2087,
+            "user_id": 11,
+            "document_id": 1224,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:44:21"
+        },
+        {
+            "id": 2088,
+            "user_id": 11,
+            "document_id": 1224,
+            "action": "document.review_approve",
+            "meta_json": null,
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:44:36"
+        },
+        {
+            "id": 2089,
+            "user_id": 11,
+            "document_id": 1225,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 16:44:43"
+        },
+        {
+            "id": 2095,
+            "user_id": 666,
+            "document_id": 1226,
+            "action": "feedback.create",
+            "meta_json": "{\"feedback_number\":\"MSK-2026-0001\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-08-31 22:39:00"
+        },
+        {
+            "id": 2098,
+            "user_id": 5,
+            "document_id": 1241,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-05\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-01 01:58:09"
+        },
+        {
+            "id": 2108,
+            "user_id": 11,
+            "document_id": 1225,
+            "action": "document.review_approve",
+            "meta_json": null,
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-01 13:26:10"
+        },
+        {
+            "id": 2109,
+            "user_id": 11,
+            "document_id": 1240,
+            "action": "document.review_start",
+            "meta_json": null,
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-01 13:26:13"
+        },
+        {
+            "id": 2110,
+            "user_id": 11,
+            "document_id": 1240,
+            "action": "document.review_approve",
+            "meta_json": "{\"lanjut_ke\":\"md\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-01 13:26:18"
+        },
+        {
+            "id": 2113,
+            "user_id": 15,
+            "document_id": 1225,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SP-ICTMD-01\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-01 14:16:59"
+        },
+        {
+            "id": 2114,
+            "user_id": 15,
+            "document_id": 1224,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-IK-ICTMD-01\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-01 14:17:06"
+        },
+        {
+            "id": 2153,
+            "user_id": 5,
+            "document_id": 1243,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1242,\"no_revisi\":2}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-06 10:40:05"
+        },
+        {
+            "id": 2154,
+            "user_id": 5,
+            "document_id": 1243,
+            "action": "document.approve",
+            "meta_json": "{\"status\":\"published\",\"doc_number_final\":\"PPA-ADRO-SOP-ICTMD-10\",\"sumber\":\"salin_arsip\"}",
+            "ip_address": "127.0.0.1",
+            "created_at": "2026-09-06 10:43:21"
+        },
+        {
+            "id": 2183,
+            "user_id": 11,
+            "document_id": 1224,
+            "action": "document.review_reject",
+            "meta_json": "{\"annotations\":0,\"ai_adopted\":0}",
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 08:24:21"
+        },
+        {
+            "id": 2185,
+            "user_id": 5,
+            "document_id": 1181,
+            "action": "document.delete",
+            "meta_json": null,
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 09:10:55"
+        },
+        {
+            "id": 2186,
+            "user_id": 5,
+            "document_id": 1223,
+            "action": "document.delete",
+            "meta_json": null,
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 09:10:58"
+        },
+        {
+            "id": 2187,
+            "user_id": 5,
+            "document_id": 1225,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-01\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 09:11:54"
+        },
+        {
+            "id": 2188,
+            "user_id": 5,
+            "document_id": 1225,
+            "action": "document.delete",
+            "meta_json": null,
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 09:12:11"
+        },
+        {
+            "id": 2190,
+            "user_id": 5,
+            "document_id": 1227,
+            "action": "document.request_revision",
+            "meta_json": "{\"from_document_id\":1226,\"no_revisi\":4}",
+            "ip_address": "36.88.128.42",
+            "created_at": "2026-08-29 09:22:57"
+        },
+        {
+            "id": 2191,
+            "user_id": 5,
+            "document_id": 1227,
+            "action": "document.submit",
+            "meta_json": "{\"status\":\"waiting_for_review\",\"round\":0,\"no_revisi\":0}",
+            "ip_address": "36.88.128.42",
+            "created_at": "2026-08-29 09:53:57"
+        },
+        {
+            "id": 2204,
+            "user_id": 5,
+            "document_id": 1228,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-04\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":2}",
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 14:12:11"
+        },
+        {
+            "id": 2208,
+            "user_id": 1,
+            "document_id": 1229,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"dsa\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":1}",
+            "ip_address": "36.88.128.42",
+            "created_at": "2026-08-29 14:32:44"
+        },
+        {
+            "id": 2209,
+            "user_id": 1,
+            "document_id": 1230,
+            "action": "document.create",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-02\",\"type\":\"SOP\",\"department\":\"ICTMD\"}",
+            "ip_address": "36.88.128.42",
+            "created_at": "2026-08-29 14:39:27"
+        },
+        {
+            "id": 2217,
+            "user_id": 5,
+            "document_id": 1231,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-SOP-ICTMD-02\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":2,\"no_revisi\":2}",
+            "ip_address": "36.88.128.42",
+            "created_at": "2026-08-29 14:46:32"
+        },
+        {
+            "id": 2218,
+            "user_id": 5,
+            "document_id": 1231,
+            "action": "document.arsip_catatan",
+            "meta_json": "{\"potong_halaman\":1,\"halaman_awal\":1,\"halaman_asli\":6}",
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 14:51:55"
+        },
+        {
+            "id": 2220,
+            "user_id": 5,
+            "document_id": 1233,
+            "action": "document.arsip_upload",
+            "meta_json": "{\"doc_number\":\"PPA-ADRO-JSA-ICTMD-04\",\"type\":\"SOP\",\"department\":\"ICTMD\",\"edisi\":1,\"no_revisi\":0}",
+            "ip_address": "103.88.153.198",
+            "created_at": "2026-08-29 14:54:48"
+        },
+        {
+            "id": 2223,
+            "user_id": 1,
+            "document_id": 1231,
+            "action": "document.cancel_revision_b",
+            "meta_json": null,
+            "ip_address": "36.88.128.42",
+            "created_at": "2026-08-29 14:58:16"
+        }
+    ]
+}

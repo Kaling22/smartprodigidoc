@@ -1,0 +1,317 @@
+1. kita akan memindahkan halaman pengesahahan menjadi halaman cover pada setiap dokumen; SOP, IK, SP, pelajari, hitung, dan amati secara dekat word tsb, jika dengan komposisi manual menggunakan ruler pada word seperti berikut 
+a. logo ppa secara vertical berada di cm 3 - 6.5
+b. ada kepanjangan PT ppa(font sz16), lalu di bawahnya judul dokumen(font sz 22), dan di bawahnya sebanyak
+1 kali enter ada nomor dokumen yg di bungkus border 2x
+c. di bawah nomor dokumen tsb sebanyak 2x enter ada kotak yang menampung approval, sesuaikan agar format nya seperti itu, jika ada pembuat tambahan, maka tambahkan saja di bawah "dibuat oleh"
+d.untuk ttd nya ganti saja menjadi approve, pertahankan miring nya, lalu untuk orang" nya sertakan departemen dan jabatannya
+pada prompt ini aku menggunakan space 1.5 dan 0cm spacing
+
+2. ubah urutan sub bab pada SOP dengan komposisi 
+1. tujuan, 
+2. ruang lingkup, 
+3. refrensi, 
+4. definisi, (jangan di gabung dengan sub bab lainnya, 
+
+halaman berikutnya 5. flowchart(jangan di gabung dengan sub Bab lainnya) tambahkan judul, keterangan dan opsi upload gambar pada flowchart, 
+
+halaman berikutnya
+6. aktivitas dan tanggung jawab, 
+7. lampiran, remove image. lampiran saat ini berupa inputan yang memunculkan dokumen apa saja yg sudah di buat (inputan dropdown dari file yang sudah ada( by make atau di upload) dan manual)
+
+yang boleh langsung sambung dan di gabung ialah halaman 1-4 dan 6-7, namun ingat aturan jika 1 point dari sub bab tsb tidak muat di halaman tsb maka di pindah saja
+
+
+3. track seluruh dokumen berlaku menggunakan log aktivitas khusus, track aktivitas tiap user terhadap dokumen yang sudah berlaku; a. siapa yang mendownload, b. siapa yang membuka menu dokumen berlaku. hal ini digunakan untuk mentrack apakah dokumen telah terdistribusi dengan baik atau belum, apakah ada ide track lain? Q: dimana kah fitur ini di letakkan? apakah ada menu nya? letakan di dashboard tpi desain nya seperti apa? apakah kamu bisa mendesain nya agar lbih bagus 
+
+4. integrasikan seluruh notifikasi pada seluruh user, notifikasi bagi non staff seperti : masukan anda sudah di jawab, dll sesuai dengan wewnang nya. notifikasi bagi GL seperti : dokumen di tolak, dokumen lolos review dll sesuai dengan user privilege nya
+
+sembari mengintegrasikan notifikasi, cek Langkah pekerjaan apakah sudah benar (pastikan ada MD di dalamnya). selain itu apakah kita bisa menguji mail server? bagaimana jika kita menggunakan protocol email yg dapat di install di host local, kita bisa buat body sesuai dengan notifikasi yang di kirimkan, kita akan klasifikasikan notif mana yg penting(yg penting akan dikirim ke email;sesuatu yang perlu di garap dan di keatahui secepat mungkin), sedangkan seluruh notifikasi yang penting dan ga penting tetap muncul di mobile dan di desktop
+
+kita akan lakukan planning matang", bagaimana rancangannya, desainnya, cara kerjanya dll. lalu kita ukur/benchmark apakah optimal, berdampak tinggi, UX bagus. gunakan skill mu, lakukan verifikasi dan uji, rancang dengan bagus, gunakan kode secara efisien
+
+=======================================================================================
+
+5. pada fitur export excel, isinya ialah daftar induk dokumen kerja, ganti kolom "tanggal terbit" menjadi kolom "tanggal efektif". perbaiki column sesuai format yang di berikan, generate tiap kolom revisi sesuai dengan nomor revisi tertinggi dari dokumen di jenis tersebut, jika revisi menyentuh angka 5 maka langsung naik edisi ke 2. aku telah memberikan refrensi pada template_daftar_induk, yang adaptif ialah nomor revisi, jika ada dokumen dalam jenis itu yang memiliki nomor revisi paling tinggi tinggi maka kolom revisi akan sebanyak nomor revisi dokumen tsb, lalu isi masing masing tgl revisi dari dokumen jenis tsb 
+
+6.dokumen berlaku memiliki sekarnag memiliki masa aktif, q: siapa yg menentukan masa berlaku tsb?, dimana menyeting nya?, apakah di menu dokumen berlaku? jika sudah habis siapa yg akan di peringatkan? SH dan GL pembuat 
+
+7. lakukan merge dengan htdocs smartpro-old, cari fitur export excel yang akan menghasilkan dokumen nomor induk, dan juga Riwayat pekerjaan JSA, 
+
+mobile 
+1. aplikasikan fitur review dokumen JSA pada smartpro-master, sisipkan button export dokumen(pdf atau excel)
+
+2. bagi user privilege seperti berikut :
+a. non staff dapat memberi masukan dan melihat dokumen saja, non staff juga dapat mendaftar di aplikasi
+b. gl dapat melihat dokumen saja, melihat status dokumen dirinya(sampai di meja mana dan status nya apa) dan departemen nya sendiri. proses pembuatan dokumen hanya bisa di lakukan di dashboard 
+c. SH/DH memiliki fitur peninjauan, mreka dapat meninjau langsung menggunakan mobile, khusus dokumen jsa, gunakan template jsa yang terdapat di smartpro-master. 
+
+untuk GL, SH/DH, PJO memiliki fitur yg sama berupa
+a). persetujuan akun non-staff
+b). mengisi dan mengajukan cuti melalui mobile
+
+d. PJO memiliki fitur cek dokumen berlaku, cek status dokumen staff,
+
+3. gunakan menu di bawah, bagi menjadi 5-4 point, sesuiakn menu tsb berdasarkan user privilege nya
+a. home
+b. dokumen berlaku
+d. 
+e
+f. akun 
+
+tambahan Kembali di proses 6 pasca excel 
+
+namun tambahkan pada proses ke 2 pembuatan dokumen sop, buat agar flowchart dan lampiran langsung standby 1 , seperti aktifitas dan tanggung jawab yg langsung standby 1.
+kemudian untuk penomoran, aku ingin agar semua penomoran dokumen bisa mengisi celah kosong, dengan mengisi awalan terdekat ke 0, aturannya seperti ini
+1. untuk dokumen draft, jika ada draft yg di hapus, mka dokumen draft berikutnya harus mengisi nomor dokumen yg kosong, bukannya naik 1.  
+2. untuk dokumen yg berlaku, pastikan tidak ada celah penomoran kosong. untuk dokumen yg sudah nonaktif(dokumen hasil revisi) maka nomor nya tetap sama dengan nomor revisi yg baru, jika ingin di pulihkan maka terapkan penjagaan. aku ingin kamu pikirkan penomoran dokumen agar efisien, dimana tidak ada celah kosong, tidak ada double nomor, dan tidak ada langkah penomoran yg tidak penting
+3. buat pada seluruh tabel yang berisi dokumen agar bisa di urutkan dengan ascending dan descending, field nya adalah nomor dokumen dan nomor revisi, beri tanda seperti dropdown sperti di windows
+4. buat agar keterangan lampiran tidak wajib di isi, namun berikan peringatan saja berupa notif/modal bahwa ada fiels kosong, berikan opsi tetap kirim, isi dulu. jika tetap kirim maka tanya sekali lagi dengan notif
+
+things to added-on refining ui/ux
+akan ada 2 refrensi xamppnew/htdocs/soft_ui/pages/dashboard.html(selanjutnya akan disebut soft ui) dan 
+xamppnew/htdocs/hope_ui/dashboard/index.html(selanjutnya akan disebut hopeui) dan 
+file:///C:/xamppnew/htdocs/sneat/html/index.html(selanjutnya akan disebut sneat) dan
+file file:///C:/xamppnew/htdocs/staradmin-2-free/dist/index.html (akan disebut stars)
+
+1. widget sebaran dokumen akan menggunakan style widget order statistics di sneat, dimana akan ada total dokumen, chart donut yang bisa di hover, lalu di bawah nya masing masing" jumlah dokumen(buat agar sama persis behaviour, perilaku dan layout nya), gunakan warna khusus smartprorefactor
+
+2. widget distribusi dokumen akan menggunakan style projects di soft_ui, dimana kolom companies menjadi dokumen dan nomor dokumen nya, logo nya di ganti jdi logo jenis dokumen nya, members di ganti jadi anggota dan pastikan bisa menampilkan foto profil masing" users, budget ialah total unduhan dan completion ialah cakupan
+
+3. ikhtisar dokumen dapat di atur Waktu durasinya seperti di hopeui, kemudian di samping kanan nya gunakan meter growth miliki sneat yang memantau jumlah dokumen yang telah di tinjau, kategori tahun akan adaptif tergantung Waktu durasi yang di pilih di chart ikhtisar dokumen, ada hari, minggu dan bulan
+
+4. untuk widget menunggu di meja, gunakan style pending request di stars, customer akan menjadi pembuat dokumen dan jabatannya(masukan fotonya juga), company menjadi judul dokumen dan nomor dokumen, progress tetap berupa progress bar namun gunakan style kolom progress pending request, dimana ada persenan, x/y dan juga warna bar nya gunakan warna gradasi asal smartprorefactor yg sudah ada. kemudian kolom status tetap berisi hari yang terlewati
+untuk mode gelap, gunakan logo dengan nama logodarkmode.png
+
+5. ganti widget ketersediaan saya dengan tampilan kalender seperti di gambar berikut, ganti tombol see all menjadi tombol ajukan off, lalu munculkan form modal nya. untuk status beban tinjau tidak perlu di perlihatkan. untuk off yang tercatat hapus juga, berikan saja warna berbeda pada tanggal off di kalender tsb lalu di bawahnya langsung di sambung log aktivitas
+
+6. saat darkmode, gunakan logo logodarkmode
+
+posisi dari penyusunan widget ini ialah 
+card sambutan
+ikhtisar dokumen 70%, meter growth 30%. buat agar kedua widget ini tidak terputus, berikan garis divider saja seperti di sneat
+widget distribusi dokumen 70%, widget sebaran dokumen 30%
+widget menunggu di meja 70%, widget kalender dan log aktivitas 30%
+widget laporan di lapangan
+
+rules : pertahankan font poppins, dan warna khas smartpro yaitu orange , orange gradasi, putih, hitam dan lainnya. sisanya gunakan style, tata letak, dan semuanya di samakan, bahkan sampai rasio widget nya juga
+
+rules tambahan, jangan pernah gunakan emoji atau icon di depan tulisan, seperti emoji wireless di depan cakupan terendah, jangan gunakan emoji itu lgi dalam teks apapun. hindari desain AI slop seperti itu 
+
+1. foto profil benar" di gunakan, distribusi penggunaan dokumen(pakai foto profil siapa aja yg sudah baca)
+2. custome widget okumen di buat menjadi widget perbandingan dokumen di buat vs berlaku
+3. research optimal ui for dashboard
+4. consider penambahan menu analytics 
+
+refining UI/UX 
+Terapkan soft ui dashboard dengan tema orange, pertahankan font, style widget, rounded box, jarak
+
+
+beberapa ubahan yang akan kita lakukan 
+1. ganti staff menjadi non-staff, jangan sekedar rename. tpi seluruh struktur harus di ganti dri yg awalnya variable staff menjadi non-staff
+2. admin bisa menambahkan user staff, non-staff dan MD
+3. samakan ukuran foto logo light dan darkmode, agar Ketika transisi terasa seamless
+4. buat kartu sambutan untuk light mode, kartu sambutan yang sekarang khusus untuk dark mode
+5. ganti total dan menyeluruh standar produksi jadi standar parameter, baik di dokumen dan di web 
+6. tampilkan seluruh widget di dashboard di seluruh user terkecuali non-staff, baik admin, GL, SH.DH, dan PJO, untuk MD belakangan
+7. admin dapat menghapus user di manajemen user
+8. admin dapat menghapus dokumen berlaku, yang mana jika menghapus dokumen berlaku maka seluruh histori nya akan bersih beserta penomorannya dan lainnya 
+
+
+
+////////things to add on
+beberapa permasalahan yang aku dapati :
+0. ada dokumen(SOP,IK, SP, JSA) yang sudah jadi lama dalam bentuk PDF, sayangnya karna memiliki format yang berbeda, maka isi pdf tsb memerlukan Waktu untuk di masukkan secara manual ke format smartpro. menurutmu solusinya bagaimana?
+
+a. tambahkan fitur upload dokumen untuk dokumen yang sudah jdi lama. isinya ialah ;nomor dokumen, judul dokumen, edisi, revisi, tanggal efektif
+pertanyaan nya ialah; bagaimana jika dokumen tsb ingin di lakukan revisi?, format smartpro tidak sama, dan juga dokumen nya berbentuk pdf yang tidak bisa di edit
+
+b. tambahkan fitur konversi dokumen menggunakan ocr, kemudian isinya di petakan secara otomatis menggunakan AI ke format smartpro
+pertanyaannya ialah; bagaimana dengan histori revisinya, apakah konversi isi dari pdf ke format smartpro akan sesuai penempatannya?
+
+c. kita membuat format adaptif yang dapat di custome sesuai dengan format dokumen yg sudah jadi, format dokumen di simpan di dokumen profile yang memuat beberapa template
+pertanyaannya ialah; apakah performa nya dan keamanan datanya aman? apakah dapat tercapai? 
+
+d. lainnya(tolong pikirkan fitur apa dan celah apa dri masing masing fitur serta potensi dri menggunakan fitur tsb)
+
+
+1. mari kelompokan pdf export yg sudah ada pada masing" jenis dokumen folder di directory storage, sehingga dokumen SOP akan berada di folder sop dan berikutnya. starting from now, untuk dokumen yg sudah ada sekarang di hapus saja sepenuhnya se-data" nya
+
+2. Ketika ingin menambahkan dokumen yg sudah lama jadi namun secara manual menggunakan input pengisian, pastinya dokumen yg sudah lama jadi memiliki nomor dokumen yang sudah jdi juga, dan nomor tsb tetap ingin di gunakan juga di smartpro hingga dokumen berlaku, bagaimana caranya agar tidak menggangu logika penomoran kita, apakah di tambah tombol atau settingan tertentu
+
+
+3. ada menu informasi yang perlu kita tambahkan namun khusus di upload saja, di akses oleh semua orang, semua departemen dan semua jabatan, sub menu informasi tsb berupa :
+
+KEBIJAKAN; kolom nya berupa: no kebijakan, judul kebijakan, upload pdf kebijakan, edisi, revisi
+
+MEMO External; kolomnya berupa: no memo, judul memo, upload pdf memo
+
+MEMO Internal; kolomnya berupa: no memo, judul memo, upload pdf memo
+
+INSTRUKSI KTT; kolomnya berupa: no instruksi ktt, judul, upload pdf, edisi, revis, tanggal efektif
+
+POSTER ; kolomnya berupa: no poster, judul dan upload poster
+
+MSDS ; no msds, judul msds, upload pdf msds
+
+BAP ; no bap, judul bap, upload pdf bap
+
+SERTIFIKAT & SIO; no sertifikat/SIO, judul sertifikat/SIO, upload pdf sertifikat/SIO 
+
+MOC & MPRP; no moc/MPRP, judul MOC/MPRP, upload pdf moc/mprp
+
+IBPR; no ibpr, judul ibpr, revisi, edisi, tanggal efektif, upload pdf
+
+untuk keseluruhan informasi ini, di perlukan nomor dokumen, judul dokumen, tanggal efektif, edisi dan revisi dari masing" dokumen 
+
+4. karna web ini nnti akan di hosting, apakah bisa kita buat dia terhubung ke smartpro mobile dahulu? sehingga nnti aplikasi yg berjalan langsung terhubung
+
+5. untuk tampilan perbaiki penyusunan widget ui/ux dri komentar lapangan, banyak ruang kosong disitu, perbaiki agar ruang kosong tsb tetap enak untuk di lihat. jangan rubah dimensi card widget nya, jika ada banyak komentar, maka buat agar bisa di scroll dan jika dikit atau tidak ada buat agar tetap bagus
+
+6. mari kita ubah format dokumen induk dimana format nya seperti di file berikut C:\xamppnew\htdocs\smartprorefactor_fresh\docs\template_daftar_induk.xlsx , dimana kolom nya adaptif terhadap dokumen yg memiliki revisi terbanyak, untuk dokumen yg revisinya tidak sebanyak dokumen dengan revisi terbanyak maka kolom nya di beri strip saja, kolom tsb di isi tanggal revisi. buat agar SH/DH bisa melakukan export no induk dokumen dan yg muncul hanya dokumen di dept itu saja
+
+7. untuk fitur revisi berlaku yang 0 -> 1apakah bisa di lakukan secara otomatis jika terdeteksi ada ubahan, apakah bisa tambahkan tombol revisi di samping tombol preview(khusus pembuatan halaman revisi) dimana halaman, nomor dan tanggal otomatis terisi, untuk isi nya tulis secara manual saja
+
+8. Ketika sub menu informasi sudah jadi, export dokumen induk sudah jadi, upload dokumen sudah jadi dan fitur revisi sudah jadi, maka akan kita impor dokumen" pdf yang sudah ada via terminal, aku memiliki Salinan project htdocs yang berisi file pdf dan sql yg bisa di jadikan sebagai acuan, sehingga tidak perlu bikin manual lgi. pertanyaannya ialah; apakah kita upload via web entah itu masal, atau per 10,20 dsb nya atau kita masukkan via backend nya saja
+
+kita akan kelompokkan tahapan tahapan ini sesuai dengan hubungan & relasinya, sehingga mulai dlu dri yg paling aman dan tidak mengusik backend(urutkan berdasarkan tingkat amannya), lalu pindah ke tahapan yg sejenis lalu tahapan sejenis berikutnya, buat menjadi 2 atau 3 md dengan promptnya juga  
+
+
+///
+mobile things
+0. hubungkan smartprorefactor-fresh dengan smartpromobile, tambahkan end-point yang di perlukan di smartpro-mobile. buat penghubung juga pada saat nnti sudah di hosting, domain nya ialah adw.proworkppa.com 
+1. tambahkan endpoint api yang belum ; 1. update foto profil, akses menu informasi 
+2. default light mode 
+3. user privilege, khusus untuk PJO tidak ada yg berubah, dapat mengakses 7 departemen. untuk GL dan SH tidak bisa mengakses departemen lain, hanya dokumen di dalam departemennya saja
+4. tambahkan peninjauan JSA di mobile, gunakan view riwayat pekerjaan saja 
+5. perbaiki preview di mobile 
+6. riwayat pekerjaan munculkan di GL & SH/DH terkait
+
+
+16071367 pak wahyu binuko, SHOWCASE NOMOR INDUK DOKUMEN
+
+
+17021841 pak arisal SHOWCASE PERSETUJUAN, ANALISIS AI 
+
+
+18064116 pak angga SHOWCASE DISTRIBUSI, PEMBUATAN, EMAIL, 
+
+
+23000651 SHE pak marcio
+18043829 pak deden(SHE)
+
+MD-0001 mmagement development
+
+revisi dan penambahan fitur baru
+1. distribusi beban kerja dokumen pada saat pemilihan peninjau pada dokumen SOP, SP dan IK tidak terbatas menjadi 2 dan tidak terbatas lgi, ganti indikator nya dari 2 bulatan menjadi total angka dokumen yg di tinjau, pikirkan penempatan nya angka dokumen yg di tinjau tsb agar bisa pas
+2. distribusi beban kerja dokumen pada pemilihan peninjau di dokumen JSA, di rubah juga menjadi angka dan jangan terapkan limit berupa 2 dokumen, namun berikan rentang indikasi dimana jika di atas 3 dokumen maka berikan indikasi berbeda di banding 2 dokumen. 
+3. GL SHE yang di berikan tugas sebagai peninjau dapat mengalihkan tugas peninjauan yang telah di berikan ke GL SHE lain yang luang
+4. tambahkan distribusi dokumen ke seluruh dokumen di menu informasi, buat agar pada widget distribusi dokumen bisa di switch antara dokumen mutu dan dokumen informasi untuk di lihat 
+5. hapus fitur pengajuan revisi oleh SH, dan PJO, berikan pengajuan revisi untuk MD, dan untuk GL berikan "Revisi". jadi GL sekarang bisa lakukan revisi, MD bisa menggunakan fitur adopsi masukan sebagai alasan pengjuan revisi, namun untuk MD dan GL masing" dapat membalas dan melihat masukannya, PJO dan SH hanya dapat melihat masukan nya, tidak dapat membalas ataupun mengajukan revisi dan mengadopsi masukan sebagai bahan revisi
+6. perbarui tampilan list dokumen non-aktif, dengan hanya menampilkan dokumen dengan edisi dan revisi paling terbaru, kemudian jika di klik maka akan memunculkan dropdown yang berisi nomor revisi sebelumnya, sehingga masing masing dokumen hanya menampilkan 1 saja namun jika di klik akan memunculkan dropdown versi revisi dri dokumen tsb
+7. dokumen yang sudah berlaku dapat di rollback ke versi revisi sebelumnya dengan mengklik tombol rollback pada dokumen non-aktif, jika di klik maka akan mengirimkan persetujuan menuju MD, SH, pjo, kemudian setelah di approve semua maka dokumen tsb akan berpindha ke dokumen revisi di gl pembuat, GL pembuat kemudian perlu menambah catatan revisi baru dan kemudian jika sudah maka di kirim Kembali secara umum ke SH, MD, PJO lalu baru dapat bisa di approve
+8. dokumen berlaku dapat di non-aktifkan oleh GL dan MD, namun perlu proses aprroval yang di teruskan menuju SH dan PJO, sampai semuanya approve untuk menonaktifkan, maka dokumen tsb non aktif, Ketika dokumen non aktif (khusus dokumen yg di matikan saja, bukan dokumen non aktif hasil revisi) akan melepas penomoran yang sudah di milikinya dan penomoran tsb dapat di gunakan di nomor baru. jika dokumen tsb akan di aktifkan Kembali, maka dokumen tsb akan mendapat penomoran baru. 
+9. pada pembuatan dokumen baru yang existing, alias upload dokumen, tambahkan alur di awalan berupa pengisian catatan revisi terlelbih dahulu pada halaman pertama dokumen SOP, SP IK, namun khusus dokumen existing saja, berikan preview side by side. kemudian langkah 2 nya ialah mempertanyakan apakah ingin lanjut mengsalin seluruh dokumen atau upload saja dengan pembaruan revisi terbaru. jika langsung upload saja stelah mengisi pembaruan revisi maka hapus halaman revisi pertama di dokumen existing dan muat halaman revisi baru yang telah di buat secara manual melalui web. kemudian jika ingin melanjutkan membuat seluruh salinan nya maka buatkan preview side by side agar bisa memiliki patokan
+
+failure notices
+1. tombol alihkan berikan juga di aksi pada table dokumen 
+2. log dokumen berisi masukan lapangan dan log, dengan format yang lebih bisa di baca manusia 
+
+add-on
+1. tambahkan modal pop up saat user pertama kali login berupa apa saja yang menunggu action dia, seperti ada pemindahan review jsa, ada dokumen yg perlu di tinjau dsb nya. kita bisa ambil pesan tsb menggunakan isi notif lonceng, jika notif lonceng tsb lengkap dan dapat memberitahukan semuanya maka gunakan saja 
+2. berikan angka pada icon menu jika terdapat ada sesuatu yg perlu mereka kerjakan, yaitu bagian peninjauan, persetujuan, Riwayat pekerjaan, persetujuan akun dll yg memang memerlukan, ini untuk membantu user agar tau apa yg baru
+3. pindahkan soft badge Riwayat ke aksi agar user tau itu bisa di klik
+4. untuk distribusi dokumen, tampilkan juga distribusi dari si pembuat juga, sehingga kita bisa tau apakah si pembuat juga termasuk ke yang baca 
+5. kita bisa melihat detail dri distribusi dokumen informasi juga
+6. ganti nama alasan dokumen jdi log pesan, kemudian pesan pengalihan harus di kirimkan juga ke GL SHE tujuan (penerima). rincikan apa saja yang akan muncul di log pesan, agar tidak ada informasi yg terlewat
+7. perbesar tombol dropdown untuk melihat list versi revisi sebelumnya pada dokumen tidak berlaku 
+8. tambahkan fitur chat WhatsApp agar kita dapat langsung action 
+9. dokumen yang di non-aktifkan secara sengaja dan dan tidak berlaku tidak dapat di musnahkan
+10. fitur tombol arsipkan itu buat apa? lebih baik tombol menjadi non-aktifkan saja, namun jika tidak tepat ada tombol non-aktifkan disitu maka tidak perlu di muat di dalamnya 
+
+sambungan
+11. tambahkan loading bar berupa gif logo smartpro 
+12. 404, 505 page 
+13. pada pembaruan dokumen informasi, Ketika versi revisi telah menyentuh 5, seharusnya edisi naik. tpi disini tidak naik 
+14. perbaiki error ini Ketika 
+15. tambahkan animasi layar kerangka jika website belum tampil sepenuhnya
+16. ekspor nomor induk dokumen di GL juga 
+17. buat agar item di dalam table yang memiliki tombol lebih dari 3 agar di ringkasi menjadi titik titik seperti di dokumen berlaku, sehingga jika di klik memunculkan dropdown. jadi ada 2-3 button saja, yaitu 2 button terpisah kemudian 1 button titik titik yang jika di klik memunculkan tombol dropdown lain, minimal perlu 2 button di button titik titik ini 
+ 
+
+sambungan 25 agustus
+1.export nomor induk dokumen di pindah ke GL
+
+2. untuk dokumen JSA sekarang hanya GL SHE saja yang bisa review, GL Plant tidak bisa lagi
+
+3.Tidak semua GL bisa membuat dokumen, ada beberapa GL yang tidak bisa membuat SOP, IK, SP Ataupun JSA. hanya bisa salah 1 atau 2 atau 3 atau 4 saja. sehingga kita akan tambahkan menu manajemen akses, di dalam menu tsb kita akan membuat user profile untuk GL yang bisa membuat dokumen dan GL selain SHE yang dapat melakukan review JSA. lalu di dalam menu tsb kita akan tambahkan user GL yang sudah di tambahkan melalui manajemen user lalu kita pilih profile akses yg telah kita buat. untuk profile default ialah tidak bisa membuat dokumen sama sekali, skema fitur ini terinspirasi dari cara konfigurasi mikrotik OS. sehingga untuk saat ini seluruh GL tidak bisa membuat dokumen, menu pembuatan dokumen nya tetap munculkan saja namun jika di arahkan menggunakan moude maka memunculkan pesan "tidak berwenang" dan tidak bisa di klik. 
+
+tambahan #3, untuk GL yang tidak memiliki akses ke pembuatan dokumen, maka pastikan dia tetap dapat melihat dokumen departemen, dimana ada gl lain sesama departemennya yang telah membuat dokumen, namun bagi dia hanya lihat saja
+
+sesama GL pada departemennya dapat memberikan masukan pada dokumen draft yang telah di buat, cara memberikan masukan dengan masuk ke menu dokumen departemen, sedangkan cara melihat masukan yg di berikan ada di dokumen saya. sehingga menu dokumen saya khusus dokumen yg dibuat pemilik, dokumen departemen khusus untuk semua dokumen yg dibuat oleh GL di departemen tsb kecuali dirinya
+
+pada log pesan, pesan tersebut dapat di klik sesuai dengan tempat pesan tersebut ada(jika pesan tsb berasal dari alasan dokumen di tolak, maka tombolnya akan menredirect ke halaman revisi), sehingga pikirkan dan cek apa saja pesan yg ada di web ini, pastikan tombol tsb(nama dan routenya) sesuai dengan konteks pesan nya dan jika di klik akan menredirect 
+
+
+4. kita akan pikirkan dashboard khusus untuk admin dan fitur khusus untuk admin untuk segala skalabilitas dan potensi penyesuaian di masa mendatang, karna web ini di masa depan akan di gunakan untuk all site, sehingga pasti ada penyesuaian berupa 
+1. nomor dokumen(no dokumen pasti di sesuikan dengan nama site baru), sehingga kita tampung dlu fitur custom no dokumen
+2. pikirkan lagi apa
+3. pikirkan lagi
+stelah kita mendapatkan apa saja fitur yg bisa kita tambahkan untuk admin maka akan kita pikirkan bagaimana membungkus atau memasukkan fitur tsb ke web, sebagai contoh kita bisa gunakan cara konfigurasi sperti di mikrotik OS, dimana kita
+
+tambahan#4, masukan manajemen user ke section menu pengaturan system juga
+
+tambahkan manajemen data, yang di dalamnya 
+
+5. jika ada pemberitahuan angka pada sub menu berupa hal yang harus di kerjakan, maka berikan tanda titik pada menu tersebut agar user bisa tahu bahwa ada sesuatu 
+
+
+/////////////////
+
+11.hilangkan ketergantungan pada section head, pastikan section head tidak terbatasi melakukan review
+12. pjo memiliki box alasan untuk mengirimkan pesan kenapa di tolak & di terima 
+13. 
+
+
+
+
+saran ui
+buat agar aksi hanya 1 button, namun Ketika di klik memunculkan banyak aksi lainnya? done
+tambahkan oauth
+
+untuk PJO tambahkan table dokumen berlaku di Bawah (dashboard)
+untuk gl, sh/dh pakai inbox message di dashboard 
+
+tambahkan button open ai asisstant
+
+////////////////////////
+
+must try
+1. buat ui baru
+2. ganti api ai, pakai yang paid 
+3. rapikan kalimat dan kata" yang terlalu banyak 
+4. rapikan dashboard MD 
+5. kelompokan widget dashboard berdasarkan user privilege nya 
+
+bug test
+1. try buat 3 dokumen, non-aktifkan 1 di tengah lalu buat lgi, cek apakah nomor dokumen nya akan terisi
+2. cek dokumen yang sedang menjalani proses revisi, apakah status sebara dan distribusi nya masih dapat di lihat
+
+
+
+// notulensi most important things
+1. penamaan produk menjadi smartpro digidok
+2. prosedur memiliki masa aktif, selama masih relevan 
+3. dokumen perundangan undangan auto inactive jika ada yg baru
+4. beban kerja dokumen (JSA) SHE dan GL berwenang 
+5. override forwarding dokumen jsa(GL SHE), identitas GL berwenang
+6. distribusi dokumen (all informasi)
+7. dokumen existing di tulis secara manual 
+
+auditor JSA khusus she saja(sekarang masih sama plant juga)
+
+cd /home/u805399352/domains/adw.proworkppa.com/public_html && /opt/alt/php85/usr/bin/php artisan queue:work --stop-when-empty --max-time=55 --tries=3 >> storage/logs/queue.log 2>&1
+	
+
+
+deskripsi aktivitas multiple, tombol bck atau uah judul sop
+cd /home/u805399352/domains/adw.proworkppa.com/public_html && /opt/alt/php85/usr/bin/php artisan queue:prune-failed --hours=168
