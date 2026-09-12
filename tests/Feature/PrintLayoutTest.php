@@ -626,15 +626,16 @@ class PrintLayoutTest extends TestCase
      * kurung kosong. Berlaku untuk halaman pengesahan SOP/SP/IK maupun blok
      * TTD JSA.
      */
-    public function test_approval_columns_show_jabatan_with_department(): void
+    public function test_approval_columns_show_jabatan_diajukan(): void
     {
         $gl = $this->aktorGl();
         $sh = $this->aktorSh();
         $pjo = $this->aktorPjo();
-        $this->assertNull($pjo->department_id, 'prasyarat: PJO tanpa departemen');
+        $gl->update(['jabatan_diajukan' => 'Group Leader ICT']);
+        $sh->update(['jabatan_diajukan' => 'Section Head ICT']);
+        $pjo->update(['jabatan_diajukan' => 'Project Manager']);
 
         $peserta = ['reviewer_id' => $sh->id, 'approver_id' => $pjo->id];
-        $dept = $gl->department->code;
 
         // SOP — kolom JABATAN pada halaman pengesahan.
         $sop = app(DocumentService::class)->createDraft(
@@ -643,18 +644,10 @@ class PrintLayoutTest extends TestCase
         $sop->contents()->create(['section_key' => 'tujuan', 'value_json' => ['Tujuan uji']]);
         $sop->update($peserta);
 
-        // Kolom JABATAN sempit (20% lebar, mengikuti grid docx resmi) → DomPDF
-        // MEMBUNGKUS "(DEPT)" ke baris kedua, dan saat dibaca dari stream PDF
-        // spasi antar-baris hilang. Keduanya sah, jadi terima dua-duanya.
-        $memuat = fn (string $teks, string $jabatan) => str_contains($teks, "{$jabatan} ({$dept})")
-            || str_contains($teks, "{$jabatan}({$dept})");
-
         [, , , $text] = $this->renderPdf($sop->refresh());
-        $this->assertTrue($memuat($text, 'Group Leader'), 'pembuat: jabatan + departemen');
-        $this->assertTrue($memuat($text, 'Section Head'), 'peninjau: jabatan + departemen');
-        $this->assertStringContainsString('PJO', $text, 'penyetuju tanpa departemen tetap "PJO"');
-        $this->assertStringNotContainsString('PJO ()', $text, 'tak ada kurung kosong utk PJO');
-        $this->assertStringNotContainsString('PJO()', $text, 'tak ada kurung kosong utk PJO');
+        $this->assertStringContainsString('Group Leader ICT', $text, 'pembuat');
+        $this->assertStringContainsString('Section Head ICT', $text, 'peninjau');
+        $this->assertStringContainsString('Project Manager', $text, 'penyetuju');
 
         // JSA — baris "Jabatan :" pada blok TTD.
         $jsa = app(DocumentService::class)->createDraft(
@@ -665,11 +658,10 @@ class PrintLayoutTest extends TestCase
         ]]);
         $jsa->update($peserta);
 
-        // Kolom TTD JSA lebih lebar (landscape) → muat satu baris utuh.
         [, , , $text] = $this->renderPdf($jsa->refresh());
-        $this->assertStringContainsString("Jabatan : Group Leader ({$dept})", $text, 'TTD JSA: jabatan + departemen');
-        $this->assertStringContainsString("Jabatan : Section Head ({$dept})", $text, 'TTD JSA: peninjau');
-        $this->assertStringContainsString('Jabatan : PJO', $text, 'TTD JSA: PJO tanpa departemen');
+        $this->assertStringContainsString('Jabatan : Group Leader ICT', $text, 'TTD JSA: pembuat');
+        $this->assertStringContainsString('Jabatan : Section Head ICT', $text, 'TTD JSA: peninjau');
+        $this->assertStringContainsString('Jabatan : Project Manager', $text, 'TTD JSA: penyetuju');
     }
 
     /**

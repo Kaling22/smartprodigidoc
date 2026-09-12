@@ -631,9 +631,11 @@ class Document extends Model
      * Diturunkan dari `arsip_path` alih-alih disimpan sebagai penanda sendiri:
      * satu-satunya hal yang membedakan dokumen arsip dari dokumen SmartPro
      * adalah ia PUNYA berkas, jadi kolom itu sekaligus jawabannya. Konsekuensi
-     * yang disengaja: dokumen arsip tak punya `contents`, `reviewer_id`, maupun
-     * `approver_id` — setiap layar yang menampilkannya harus tahan ketiganya
-     * kosong.
+     * yang disengaja: dokumen arsip tak punya `contents`, jadi setiap layar
+     * yang menampilkannya harus tahan itu kosong. `reviewer_id`/`approver_id`
+     * BOLEH terisi sejak saklar Admin "gabung PDF" (ArsipPenggabung) — diisi
+     * manual di lembar Catatan Revisi supaya Cover-nya bisa mencetak nama
+     * peninjau/penyetuju — tapi tetap boleh kosong untuk dokumen arsip lain.
      */
     public function isArsip(): bool
     {

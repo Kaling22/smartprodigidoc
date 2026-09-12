@@ -10,6 +10,7 @@ import {
 import {
     Field, FieldDescription, FieldError, FieldGroup, FieldLabel,
 } from '@/components/ui-maia/field';
+import { Input } from '@/components/ui-maia/input';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui-maia/select';
@@ -19,7 +20,13 @@ import { AppLayout } from '@/layouts/V2/AppLayout';
 import type { UsersFormProps } from '@/types/pengguna';
 
 interface Props extends UsersFormProps {
-    user: { id: number; name: string; nrp: string | null; department_id: number | null };
+    user: {
+        id: number;
+        name: string;
+        nrp: string | null;
+        department_id: number | null;
+        jabatan_diajukan: string | null;
+    };
     peranSekarang: string | null;
 }
 
@@ -44,6 +51,7 @@ export default function UsersEdit({ user, departments, roles, roleLabels, peranS
     const { data, setData, put, processing, errors } = useForm({
         role: peranSekarang ?? '',
         department_id: user.department_id ? String(user.department_id) : '',
+        jabatan_diajukan: user.jabatan_diajukan ?? '',
     });
 
     return (
@@ -136,6 +144,28 @@ export default function UsersEdit({ user, departments, roles, roleLabels, peranS
                                 errors={
                                     errors.department_id
                                         ? [{ message: errors.department_id }]
+                                        : undefined
+                                }
+                            />
+                        </Field>
+
+                        <Field data-invalid={!!errors.jabatan_diajukan || undefined}>
+                            <FieldLabel htmlFor="jabatan_diajukan">Jabatan untuk Pengesahan</FieldLabel>
+                            <Input
+                                id="jabatan_diajukan"
+                                name="jabatan_diajukan"
+                                maxLength={100}
+                                value={data.jabatan_diajukan}
+                                onChange={(e) => setData('jabatan_diajukan', e.target.value)}
+                                aria-invalid={!!errors.jabatan_diajukan}
+                            />
+                            <FieldDescription>
+                                Ditampilkan pada lembar pengesahan, mis. Group Leader ICT.
+                            </FieldDescription>
+                            <FieldError
+                                errors={
+                                    errors.jabatan_diajukan
+                                        ? [{ message: errors.jabatan_diajukan }]
                                         : undefined
                                 }
                             />

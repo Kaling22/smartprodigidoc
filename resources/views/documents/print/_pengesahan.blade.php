@@ -5,7 +5,7 @@
     // Kolom JABATAN memuat jabatan + DEPARTEMEN, mis. "Group Leader (ICTMD)"
     // (permintaan pemilik). PJO tanpa departemen → cukup "PJO".
     // Peta label dipusatkan di User agar tak lagi tercecer di tiap template.
-    $jabatanLabel = fn ($user) => $user?->jabatanWithDepartment() ?? '-';
+    $jabatanLabel = fn ($user) => $user?->jabatanPengesahan() ?? '-';
     // Sudah pernah Berlaku (disetujui) → SELURUH TTD bercap APPROVED. Memakai
     // published_at agar dokumen "Sedang Direvisi"/obsolete yang dulu disahkan
     // tetap menampilkan capnya.

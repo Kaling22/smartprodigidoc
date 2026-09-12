@@ -177,6 +177,7 @@ class UserManagementController extends Controller
             'name' => $request->name,
             'nrp' => $request->nrp,
             'jabatan' => $jabatan,
+            'jabatan_diajukan' => $request->jabatan_diajukan,
             'nomor_hp' => $request->nomor_hp,
             'email' => $request->email,
             'department_id' => $departmentId,
@@ -199,7 +200,7 @@ class UserManagementController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Users/Edit', [
-            'user' => $user->only(['id', 'name', 'nrp', 'department_id']),
+            'user' => $user->only(['id', 'name', 'nrp', 'department_id', 'jabatan_diajukan']),
             'departments' => Department::orderBy('code')->get(),
             'roles' => StoreUserRequest::assignableRoles(),
             'roleLabels' => User::ROLE_DESKRIPSI,
@@ -225,7 +226,11 @@ class UserManagementController extends Controller
 
         [$jabatan, $departmentId] = $this->turunanPeran($request->role, $request->department_id);
 
-        $user->update(['jabatan' => $jabatan, 'department_id' => $departmentId]);
+        $user->update([
+            'jabatan' => $jabatan,
+            'department_id' => $departmentId,
+            'jabatan_diajukan' => $request->jabatan_diajukan,
+        ]);
         // syncRoles, BUKAN assignRole: peran lama harus dilepas, kalau tidak
         // user menumpuk peran dan izinnya jadi gabungan keduanya.
         $user->syncRoles([$request->role]);

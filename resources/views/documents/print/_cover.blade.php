@@ -31,7 +31,7 @@
 
     // Kolom JABATAN memuat jabatan + DEPARTEMEN, mis. "Group Leader (ICTMD)"
     // (permintaan pemilik). PJO tanpa departemen → cukup "PJO".
-    $jabatanLabel = fn ($user) => $user?->jabatanWithDepartment() ?? '-';
+    $jabatanLabel = fn ($user) => $user?->jabatanPengesahan() ?? '-';
 
     // Sudah pernah Berlaku (disetujui) → SELURUH cap terpasang. Memakai
     // published_at agar dokumen "Sedang Direvisi"/obsolete yang dulu disahkan
@@ -40,13 +40,28 @@
 
     $reviewDate = optional($document->reviews->firstWhere('decision', 'approved'))->updated_at?->format('d/m/Y') ?? '-';
     $pubDate = $document->published_at?->format('d/m/Y') ?? '-';
-    // Salinan arsip tidak melewati review. SH/DH menandatangani ketika
-    // salinan diresmikan (`submitted_at`), sementara `published_at` tetap
-    // menyimpan tanggal efektif dari formulir unggah arsip.
+
+    // Dokumen arsip yang peninjau/penyetujunya diisi manual lewat saklar Admin
+    // "gabung PDF" (ArsipPenggabung) tak pernah melewati alur tinjau
+    // sungguhan: tak ada baris `reviews`, dan `published_at` cuma tanggal
+    // efektif yang diketik di formulir unggah, bukan tanggal ia benar-benar
+    // ditinjau/disetujui. Satu-satunya tanggal yang jujur untuk keduanya
+    // adalah tanggal dokumen ini didaftarkan (`created_at`) — dan itu hanya
+    // berlaku bila peninjau/penyetujunya memang terisi, supaya arsip LAMA yang
+    // belum pernah mengisi keduanya (reviewer_id/approver_id kosong) tetap
+    // mencetak apa adanya seperti sebelum saklar ini ada.
+    $tanggalDibuatArsip = $document->created_at?->format('d/m/Y') ?? '-';
+    $arsipTanpaSalin = $document->isArsip() && ! $document->salin_arsip_at;
+
+    // Salinan arsip (retype-di-wizard) tidak melewati review. SH/DH
+    // menandatangani ketika salinan diresmikan (`submitted_at`), sementara
+    // `published_at` tetap menyimpan tanggal efektif dari formulir unggah arsip.
     $approvalDate = $document->salin_arsip_at
         ? ($document->submitted_at?->format('d/m/Y') ?? $pubDate)
-        : $pubDate;
-    $reviewOrApprovalDate = $document->salin_arsip_at ? $approvalDate : $reviewDate;
+        : ($arsipTanpaSalin && $document->approver_id ? $tanggalDibuatArsip : $pubDate);
+    $reviewOrApprovalDate = $document->salin_arsip_at
+        ? $approvalDate
+        : ($arsipTanpaSalin && $document->reviewer_id ? $tanggalDibuatArsip : $reviewDate);
 
     // Peta peran → [penandatangan, tanggal]. "peninjau_penyetuju" (SP/IK) = satu
     // SH/DH; tanggalnya = tgl terbit (persetujuan final), fallback tgl tinjau.

@@ -114,4 +114,10 @@ export interface SistemProps {
     /** `SimpanAiRequest::PENYEDIA` — kunci → label. */
     penyedia: Record<string, string>;
     kesehatan: Kesehatan;
+    /**
+     * Saklar gabung-PDF dokumen lama (`Pengaturan::arsipGabungCoverAktif()`).
+     * Aktif = potong halaman 1-2 berkas arsip, ganti dengan Cover+Catatan
+     * Revisi; nonaktif = isi diketik ulang di wizard (alur lama).
+     */
+    arsipGabungAktif: boolean;
 }

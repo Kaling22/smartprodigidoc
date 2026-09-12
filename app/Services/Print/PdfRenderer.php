@@ -495,7 +495,7 @@ class PdfRenderer
      * Koordinatnya HASIL PENGUKURAN docs/Cover_Depan.docx; jangan diubah tanpa
      * mengukur ulang (HANDOVER §7).
      */
-    private function catCoverHalamanSatu(Dompdf $dompdf): void
+    public function catCoverHalamanSatu(Dompdf $dompdf): void
     {
         $logo = $this->logoCoverPath();
 

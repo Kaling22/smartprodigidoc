@@ -11,8 +11,10 @@ use setasign\Fpdi\Fpdi;
 use setasign\Fpdi\PdfParser\StreamReader;
 
 /**
- * Menyisipkan lembar CATATAN REVISI ke depan berkas dokumen LAMA (PLAN-REVISI-v6
- * Fase H) — dan, bila diminta, membuang halaman awal berkas aslinya.
+ * Menyisipkan lembar Cover + CATATAN REVISI ke depan berkas dokumen LAMA
+ * (PLAN-REVISI-v6 Fase H; dihidupkan kembali & diperluas dengan halaman Cover
+ * di balik saklar Admin `Pengaturan::arsipGabungCoverAktif()`) — dan, bila
+ * diminta, membuang halaman awal berkas aslinya (bawaan: 2 halaman).
  *
  * KENAPA ADA KELAS SENDIRI: DomPDF hanya bisa MEMBUAT PDF; ia tak bisa membaca
  * apalagi memotong PDF yang sudah jadi. FPDI-lah yang bisa, dan ia bekerja dari
@@ -54,6 +56,11 @@ class ArsipPenggabung
         $asli = $this->berkasAsli($document);
         $halaman = $this->jumlahHalaman($disk->path($asli));
 
+        // Pengaman: berkas asli yang lebih pendek dari $potong (mis. cuma 1
+        // halaman) tak boleh menghasilkan potongan negatif — sisanya sekadar
+        // tak ada yang dipotong lagi.
+        $potong = max(0, min($potong, $halaman));
+
         $lembar = $this->lembar(
             $document,
             (array) ($document->fresh()->contentMap()['catatan_revisi'] ?? []),
@@ -92,7 +99,7 @@ class ArsipPenggabung
     }
 
     /**
-     * Lembar CATATAN REVISI sebagai PDF berdiri sendiri (biner).
+     * Lembar Cover + CATATAN REVISI sebagai PDF berdiri sendiri (biner, 2 halaman).
      *
      * Kop-nya kop dokumen yang sama, jadi lembar sisipan tak terbaca sebagai
      * kertas asing di depan berkas pindaian. Nomor halaman di-stamp dengan
@@ -100,31 +107,52 @@ class ArsipPenggabung
      * ({@see PdfRenderer::stampPageNumbers()}) — angka AWALNYA saja yang datang
      * dari pengguna, karena hanya dia yang tahu penomoran dokumen lamanya.
      *
+     * Halaman Cover (bila schema jenisnya menyatakan `cover_page: _cover`,
+     * yang berlaku untuk SOP/SP/IK) TIDAK diberi nomor — kebiasaan Word yang
+     * sama dengan dokumen SmartPro biasa ({@see PdfRenderer::stampPageNumbers()}
+     * cabang `$punyaCover`) — nomor halaman baru mulai di lembar Catatan Revisi.
+     *
      * @param  array<int, array<string, mixed>>  $baris  baris lembar catatan revisi
      * @return string isi PDF (biner)
      */
     public function lembar(Document $document, array $baris, int $halamanAwal, int $totalHalaman): string
     {
         // Data cetak diambil dari sumber yang sama dengan cetakan biasa (schema,
-        // logo, dokumen) — kop lembar sisipan mustahil menyimpang dari kop
-        // dokumen SmartPro lainnya. Yang ditimpa hanya isinya.
+        // logo, dokumen, coverJudulBaris/stamp) — kop & cover lembar sisipan
+        // mustahil menyimpang dari kop dokumen SmartPro lainnya. Yang ditimpa
+        // hanya isi Catatan Revisi-nya.
         $data = app(PdfRenderer::class)->viewData($document);
+        $punyaCover = ($data['schema']->raw()['cover_page'] ?? null) === '_cover';
 
-        $pdf = Pdf::loadView(
-            'documents.print.arsip-catatan',
+        $dompdf = Pdf::loadView(
+            'documents.print.arsip-cover-catatan',
             array_merge($data, ['contentMap' => ['catatan_revisi' => $baris]])
         )->setPaper('a4', 'portrait')->getDomPDF();
 
-        $pdf->render();
+        $dompdf->render();
+
+        // Sama seperti PdfRenderer::renderStandardPaginated(): dicat SESUDAH
+        // render (canvas page_script berjalan setelah isi halaman digambar),
+        // dan HANYA bila jenisnya memang punya cover.
+        if ($punyaCover) {
+            app(PdfRenderer::class)->catCoverHalamanSatu($dompdf);
+        }
 
         // page_script dipasang SESUDAH render, seperti di PdfRenderer: nomor
         // halaman baru bisa dihitung ketika seluruh halaman sudah terbentuk.
-        $font = $pdf->getFontMetrics()->getFont('Helvetica');
-        $pdf->getCanvas()->page_script(function (int $nomor, int $jumlah, $canvas) use ($font, $halamanAwal, $totalHalaman) {
-            $canvas->text(392.8, 94.5, 'Halaman: '.($halamanAwal + $nomor - 1).' dari '.$totalHalaman, $font, 8, [0, 0, 0]);
+        // Dengan cover, halaman 1 dilewati (tak bernomor) dan Catatan Revisi
+        // (halaman 2 lembar sisipan) jadi "halaman 1" yang terlihat pembaca.
+        $font = $dompdf->getFontMetrics()->getFont('Helvetica');
+        $dompdf->getCanvas()->page_script(function (int $nomor, int $jumlah, $canvas) use ($font, $halamanAwal, $totalHalaman, $punyaCover) {
+            if ($punyaCover && $nomor === 1) {
+                return;
+            }
+
+            $offset = $punyaCover ? 1 : 0;
+            $canvas->text(392.8, 94.5, 'Halaman: '.($halamanAwal + $nomor - 1 - $offset).' dari '.$totalHalaman, $font, 8, [0, 0, 0]);
         });
 
-        return (string) $pdf->output();
+        return (string) $dompdf->output();
     }
 
     /**

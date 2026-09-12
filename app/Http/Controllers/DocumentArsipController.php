@@ -6,11 +6,13 @@ use App\Http\Requests\ArsipDocumentRequest;
 use App\Models\Department;
 use App\Models\Document;
 use App\Models\DocumentType;
+use App\Models\Pengaturan;
 use App\Notifications\DocumentNotification;
 use App\Services\AuditService;
 use App\Services\DocumentParticipantResolver;
 use App\Services\DocumentService;
 use App\Services\DocumentWizard;
+use App\Services\Print\ArsipPenggabung;
 use App\Services\Print\PdfRenderer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -97,6 +99,16 @@ class DocumentArsipController extends Controller
 
         [$edisiKirim, $revisiKirim] = $document->revisiSaatKirim();
 
+        // Kandidat Peninjau/Penyetuju — SATU sumber dengan wizard biasa
+        // (DocumentParticipantResolver, matriks docs/aturan-alur-v2.md), jadi
+        // dokumen lama tak punya daftar kandidat sendiri yang bisa menyimpang.
+        // Dihitung apa adanya (bukan hanya saat saklar gabung aktif): murah,
+        // dan layarnya sendiri yang memutuskan menampilkannya atau tidak.
+        $kandidat = app(DocumentWizard::class)->propsKandidat([
+            'peninjau' => $this->peserta->reviewerCandidates($document),
+            'penyetuju' => $this->peserta->approverCandidates($document),
+        ]);
+
         return Inertia::render('Documents/Arsip/Catatan', [
             'document' => $this->barisArsip($document),
             'baris' => $document->contentMap()['catatan_revisi'] ?? [],
@@ -105,38 +117,100 @@ class DocumentArsipController extends Controller
             // dirender React, ia harus datang sebagai props — perhitungannya
             // membaca versi lama di basis data (pakem P5).
             'revisiKirim' => ['edisi' => $edisiKirim, 'revisi' => $revisiKirim],
+            // Saklar Admin: menentukan apakah tombol Simpan di layar ini
+            // langsung menerapkan Cover+Catatan Revisi ke PDF (aktif) atau
+            // menempuh alur lama, ketik ulang di wizard (nonaktif).
+            'gabungAktif' => Pengaturan::arsipGabungCoverAktif(),
+            // Peninjau/Penyetuju hanya berarti saat saklar aktif: Cover-nya
+            // butuh nama+jabatan keduanya, dan dokumen arsip tak pernah
+            // melewati alur tinjau sungguhan untuk mendapatkannya sendiri.
+            'kandidatPeninjau' => $kandidat['peninjau'],
+            'kandidatPenyetuju' => $kandidat['penyetuju'],
+            'reviewerId' => $document->reviewer_id,
+            'approverId' => $document->approver_id,
         ]);
     }
 
     /**
-     * Simpan lembar catatan lalu SALIN dokumennya ke web (Fase H, langkah 2).
+     * Simpan lembar catatan, lalu terapkan ke dokumen (Fase H, langkah 2).
      *
-     * Sejak rencana pra-produksi Fase 2 (butir 7) tinggal SATU jalan: lembar
-     * disimpan, lalu dokumennya diketik ulang di wizard dan berkas unggahan
-     * tinggal jadi rujukan di panel kanan. Pilihan lama "gabung" (lembar
-     * disisipkan ke PDF unggahan lewat `ArsipPenggabung`) dicabut atas
-     * keputusan pemilik — berkasnya sendiri tak dihapus, ia cuma kehilangan
-     * pemanggilnya.
+     * DUA jalan, dipilih lewat saklar Admin `Pengaturan::arsipGabungCoverAktif()`:
+     *
+     *  · AKTIF (bawaan) — Peninjau & Penyetuju WAJIB dipilih (kandidat sama
+     *    dengan wizard, DocumentParticipantResolver), lalu lembar
+     *    Cover+Catatan Revisi disisipkan LANGSUNG ke berkas PDF lewat
+     *    `ArsipPenggabung` (memotong halaman 1-2 asli). Dokumen tetap
+     *    `published`, tak ada draft/wizard sama sekali — dan karena itu tak
+     *    ada langkah lain yang bisa mengisi nama+tanggal kotak pengesahan
+     *    Cover selain di sini.
+     *  · NONAKTIF — alur yang berjalan sejak rencana pra-produksi Fase 2
+     *    (butir 7): dokumennya diketik ulang di wizard dan berkas unggahan
+     *    tinggal jadi rujukan di panel kanan. Dipertahankan sebagai jalan
+     *    turun bila Admin mematikan saklarnya.
      *
      * Kunci asing dari halaman V1 yang belum ikut disunting (`pilihan`,
      * `potong_halaman`, `halaman_awal`) sengaja DIABAIKAN, bukan ditolak 422:
-     * pohon V1 dibekukan, dan mematikan sakelar V2 tak boleh membuat lembar ini
+     * pohon V1 dibekukan, dan mengganti saklar V2 tak boleh membuat lembar ini
      * mustahil disimpan.
      */
     public function simpanCatatan(Request $request, Document $document): RedirectResponse
     {
         $this->pastikanBolehMencatat($request, $document);
 
+        $gabungAktif = Pengaturan::arsipGabungCoverAktif();
+
         $request->validate([
             'edisi' => ['required', 'integer', 'min:1', 'max:99'],
             'no_revisi' => ['required', 'integer', 'min:0', 'max:'.DocumentService::MAKS_REVISI],
             'sections.catatan_revisi' => ['nullable', 'array'],
+            // Peninjau/Penyetuju HANYA wajib saat saklar aktif — Cover-nya
+            // butuh nama+jabatan keduanya, dan itulah satu-satunya alasan
+            // dokumen arsip ini mengenal kedua kolom sama sekali (lihat
+            // Document::isArsip()). Alur lama (nonaktif) tak menyentuhnya:
+            // peninjau/penyetuju yang sesungguhnya dipilih belakangan di
+            // wizard, seperti draft biasa.
+            'reviewer_id' => [$gabungAktif ? 'required' : 'nullable', 'integer'],
+            'approver_id' => [$gabungAktif ? 'required' : 'nullable', 'integer'],
         ]);
 
         // Baris lembar + Edisi/Revisi ditulis oleh jalur yang SAMA dengan wizard
         // (DocumentWizard::persistRevisionLog), jadi bentuk tersimpannya mustahil
         // berbeda antara dokumen lama dan dokumen web.
         app(DocumentWizard::class)->persistRevisionLog($request, $document);
+
+        if ($gabungAktif) {
+            // Kandidat sah SATU sumber dengan yang ditawarkan `catatan()` ke
+            // layar (pakem P5) — id di luar daftar itu ditolak di sini, bukan
+            // hanya disaring di dropdown.
+            if (! $this->peserta->isValidReviewer($document, (int) $request->reviewer_id)
+                || ! $this->peserta->isValidApprover($document, (int) $request->approver_id)) {
+                return back()->withErrors([
+                    'reviewer_id' => 'Peninjau atau Penyetuju yang dipilih bukan kandidat sah untuk dokumen ini.',
+                ]);
+            }
+
+            // Ditulis SEBELUM digabung: ArsipPenggabung::lembar() membaca
+            // $document->reviewer/$document->approver lewat PdfRenderer::viewData()
+            // untuk mengisi kotak pengesahan Cover — kosong berarti Cover
+            // tercetak tanpa nama sama sekali.
+            $document->update([
+                'reviewer_id' => $request->reviewer_id,
+                'approver_id' => $request->approver_id,
+            ]);
+
+            try {
+                // potong: 2, halamanAwal: 1 — persis "halaman 1 dan 2 dipotong,
+                // diganti cover+catatan revisi" (bukan isian pengguna; sumber
+                // potongnya SELALU arsip_path_asli, jadi mengulang lembar ini
+                // tak pernah memakan halaman kedua).
+                app(ArsipPenggabung::class)->terapkan($document, potong: 2, halamanAwal: 1);
+            } catch (\DomainException $e) {
+                return back()->withErrors(['berkas' => $e->getMessage()]);
+            }
+
+            return redirect()->route('documents.published')->with('status',
+                "Lembar Catatan Revisi tersimpan. Halaman 1-2 berkas {$document->displayNumber()} sudah diganti dengan Cover dan Catatan Revisi — dokumen tetap Berlaku, tanpa perlu diketik ulang.");
+        }
 
         // Dokumen diketik ulang di wizard = versi web MENGGANTIKAN berkas
         // pindaian, dan itu persis bentuk revisi Tipe B: draft baru bernomor

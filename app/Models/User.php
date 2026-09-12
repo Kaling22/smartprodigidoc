@@ -287,6 +287,21 @@ class User extends Authenticatable
         return $dept ? "{$jabatan} ({$dept})" : $jabatan;
     }
 
+    /**
+     * Jabatan yang dicetak pada pengesahan dokumen.
+     *
+     * `jabatan` tetap kunci internal alur/izin (mis. `group_leader`), sementara
+     * `jabatan_diajukan` adalah nama posisi resmi yang diisi Admin (mis.
+     * "Group Leader ICT"). Akun lama yang belum memiliki isian tetap memakai
+     * label turunan lama agar dokumen historis tidak kehilangan jabatan.
+     */
+    public function jabatanPengesahan(): string
+    {
+        return filled($this->jabatan_diajukan)
+            ? trim($this->jabatan_diajukan)
+            : $this->jabatanWithDepartment();
+    }
+
     /** "GL ICTMD" — bentuk ringkas untuk kolom sempit di layar. */
     public function jabatanShort(): string
     {

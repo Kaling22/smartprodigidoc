@@ -3,7 +3,6 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/dm-sans";
 @import "@fontsource-variable/inter";
-@import 'quill/dist/quill.snow.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -257,13 +256,16 @@
 
 /*
 | ============================================================================
-| KOLOM RICH TEXT (Quill "snow") — bekas `.pp-rt` di layouts/app.blade.php
+| KOLOM RICH TEXT (Lexical, sejak migrasi dari Quill "snow") — bekas `.pp-rt`
+| di layouts/app.blade.php
 | ============================================================================
 |
-| Quill menuliskan warnanya sendiri (#fff / #ccc / #444) langsung di berkas
-| snow, jadi ketiga permukaannya harus disebut ulang — kalau tidak, editor
-| menyala putih di tengah halaman gelap. Yang dipakai di sini token tema
-| shadcn, sehingga terang & gelap ikut sendiri tanpa satu pun aturan @media.
+| Toolbar & kotak isinya digambar `ui-maia/button` + util Tailwind LANGSUNG di
+| RichText.tsx (token tema shadcn dari sononya) — beda dari Quill dulu yang
+| butuh override CSS `.ql-*` besar-besaran karena stylesheet bawaannya sendiri
+| menulis warna literal (#fff/#ccc/#444). Yang tersisa di sini cuma keadaan
+| yang TAK BISA diketik langsung di JSX: penanda "wajib diisi" dari
+| `validasiWajib()`.
 |
 | Isi editor & tampilan BACA (halaman Tinjau) memakai aturan yang SAMA lewat
 | `.pp-rt-isi`, supaya yang dilihat penyusun = yang dilihat peninjau. Angkanya
@@ -271,67 +273,11 @@
 | yang dijaga sama adalah BENTUKNYA (kutipan menjorok & miring, gambar tak
 | melebihi lebar kolom).
 */
-.pp-rt .ql-toolbar.ql-snow,
-.pp-rt .ql-container.ql-snow {
-    border-color: var(--border);
-}
-.pp-rt .ql-toolbar.ql-snow {
-    background: var(--muted);
-    border-radius: var(--radius) var(--radius) 0 0;
-}
-.pp-rt .ql-container.ql-snow {
-    background: var(--background);
-    border-radius: 0 0 var(--radius) var(--radius);
-}
-.pp-rt .ql-editor {
-    color: var(--foreground);
-    min-height: 7rem;
-}
-.pp-rt .ql-editor.ql-blank::before {
-    color: var(--muted-foreground);
-    font-style: normal;
-}
-.pp-rt .ql-snow .ql-stroke { stroke: var(--foreground); }
-.pp-rt .ql-snow .ql-fill { fill: var(--foreground); }
-/*
-| Ukuran tombol toolbar DIPATOK, bukan `auto`.
-|
-| Quill MENIMPA `innerHTML` tiap tombol ber-kelas `ql-*` dengan SVG-nya
-| sendiri (themes/base.js buildButtons) — ikon React yang kita gambar cuma
-| bertahan sampai Quill selesai dimuat. SVG pengganti itu ditata
-| quill.snow.css sebagai `float:left; height:100%`. Float tak menyumbang
-| tinggi ke induknya, jadi `height:auto` di sini membuat tombolnya KOLAPS
-| ke nol dan seluruh toolbar tampak hilang. Karena itu tinggi & lebarnya
-| ditulis eksplisit, dan svg-nya dilepas dari float.
-*/
-.pp-rt .ql-toolbar.ql-snow button {
-    color: var(--muted-foreground);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    padding: 0.25rem;
-    border-radius: calc(var(--radius) - 4px);
-}
-.pp-rt .ql-toolbar.ql-snow button svg {
-    float: none;
-    width: 100%;
-    height: 100%;
-}
-.pp-rt .ql-toolbar.ql-snow button:hover,
-.pp-rt .ql-toolbar.ql-snow button.ql-active {
-    background: color-mix(in oklab, var(--primary) 18%, transparent);
-    color: var(--primary);
-}
-
 /* Ditandai validasiWajib() — sepadan dgn aria-invalid pada input biasa. */
-.pp-rt-invalid .ql-toolbar.ql-snow,
-.pp-rt-invalid .ql-container.ql-snow {
+.pp-rt-invalid {
     border-color: var(--destructive);
 }
 
-.pp-rt .ql-editor blockquote,
 .pp-rt-isi blockquote {
     border-left: 3px solid var(--primary);
     padding-left: 0.8rem;
@@ -340,11 +286,9 @@
     color: var(--muted-foreground);
 }
 
-/* Gambar SELALU sebaris sendiri — tak pernah berdampingan dgn kalimat. Blot
-   `image` Quill bersifat inline, jadi tanpa display:block ia duduk di samping
-   teks; di PDF ia memang sudah jadi baris tabel tersendiri, dan editor harus
-   memperlihatkan hal yang sama supaya penyusun tak terkejut saat mencetak. */
-.pp-rt .ql-editor img,
+/* Gambar SELALU sebaris sendiri — tak pernah berdampingan dgn kalimat (di PDF
+   ia memang sudah jadi baris tabel tersendiri, dan tampilan baca harus
+   memperlihatkan hal yang sama supaya penyusun tak terkejut saat mencetak). */
 .pp-rt-isi img {
     display: block;
     max-width: 100%;

@@ -19,6 +19,9 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'nrp' => ['required', 'string', 'max:50', 'unique:users,nrp'],
+            // Nama jabatan yang akan tampil pada lembar pengesahan. Berbeda
+            // dari `jabatan`, yaitu kunci peran internal yang diturunkan server.
+            'jabatan_diajukan' => ['nullable', 'string', 'max:100'],
             'nomor_hp' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'string', 'email', 'max:255', 'unique:users,email'],
             // Pimpinan tanpa departemen (v3.1 §3.1); Admin dept opsional.

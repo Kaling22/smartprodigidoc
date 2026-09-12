@@ -9,12 +9,17 @@ import { Alert, AlertDescription } from '@/components/ui-maia/alert';
 import { Badge } from '@/components/ui-maia/badge';
 import { Button } from '@/components/ui-maia/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui-maia/card';
-import { FieldGroup } from '@/components/ui-maia/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui-maia/field';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui-maia/select';
 import { ConfirmDialog } from '@/components/v2/ConfirmDialog';
 import { barisLogBaru, RevisionLog, type BarisLog } from '@/components/v2/dokumen/fields/RevisionLog';
 import { AppLayout } from '@/layouts/V2/AppLayout';
 import type { PageProps } from '@/types';
 import type { ArsipCatatanProps } from '@/types/distribusi';
+import type { Kandidat } from '@/types/wizard';
+
+/** Radix menolak `value=""`, jadi "belum memilih" butuh nilai penanda — pola sama dengan UserPicker.tsx. */
+const KOSONG = '__kosong__';
 
 /**
  * Lembar CATATAN REVISI dokumen lama — kembaran V2
@@ -42,17 +47,23 @@ import type { ArsipCatatanProps } from '@/types/distribusi';
  *  · §3.6 — nomor · judul · lencana pindah ke prop `sub` layout.
  */
 export default function DocumentsArsipCatatan() {
-    const { document: doc, baris, revisiKirim, errors } =
-        usePage<PageProps & ArsipCatatanProps>().props;
+    const {
+        document: doc, baris, revisiKirim, gabungAktif,
+        kandidatPeninjau, kandidatPenyetuju, reviewerId, approverId, errors,
+    } = usePage<PageProps & ArsipCatatanProps>().props;
 
     const [konfirmasi, setKonfirmasi] = useState(false);
     const [logRows, setLogRows] = useState<BarisLog[]>(() =>
         Array.isArray(baris) && baris.length ? (baris as BarisLog[]) : [barisLogBaru()],
     );
 
-    const form = useForm<{ edisi: number; no_revisi: number }>({
+    const form = useForm<{
+        edisi: number; no_revisi: number; reviewer_id: number | ''; approver_id: number | '';
+    }>({
         edisi: doc.edisi,
         no_revisi: doc.no_revisi,
+        reviewer_id: reviewerId ?? '',
+        approver_id: approverId ?? '',
     });
 
     // Baris lembar tinggal di state-nya sendiri lalu ditempelkan saat kirim —
@@ -81,9 +92,20 @@ export default function DocumentsArsipCatatan() {
             <Alert>
                 <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={1.5} className="size-4" />
                 <AlertDescription>
-                    Dokumen ini <strong>sudah Berlaku</strong>. Sesudah lembar ini tersimpan, isinya
-                    diketik ulang di wizard — berkas yang Anda unggah{' '}
-                    <strong>tak pernah ditimpa</strong> dan tetap jadi rujukan.
+                    {gabungAktif ? (
+                        <>
+                            Dokumen ini <strong>sudah Berlaku</strong>. Sesudah lembar ini tersimpan,
+                            halaman 1–2 berkas PDF akan <strong>langsung diganti</strong> dengan Cover
+                            dan Catatan Revisi hasil cetak sistem — dokumen selesai tanpa perlu
+                            mengetik ulang isinya di wizard.
+                        </>
+                    ) : (
+                        <>
+                            Dokumen ini <strong>sudah Berlaku</strong>. Sesudah lembar ini tersimpan,
+                            isinya diketik ulang di wizard — berkas yang Anda unggah{' '}
+                            <strong>tak pernah ditimpa</strong> dan tetap jadi rujukan.
+                        </>
+                    )}
                 </AlertDescription>
             </Alert>
 
@@ -110,6 +132,31 @@ export default function DocumentsArsipCatatan() {
                 <Card className="lg:col-span-7">
                     <CardContent>
                         <FieldGroup>
+                            {/* Peninjau/Penyetuju HANYA saat saklar gabung aktif: Cover
+                                yang digenerate mencetak nama+jabatan keduanya di kotak
+                                pengesahan, dan dokumen arsip ini tak melewati alur tinjau
+                                sungguhan untuk mendapatkannya sendiri. */}
+                            {gabungAktif ? (
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <PemilihUser
+                                        id="reviewer_id"
+                                        label="Peninjau"
+                                        options={kandidatPeninjau}
+                                        value={form.data.reviewer_id}
+                                        onChange={(v) => form.setData('reviewer_id', v)}
+                                        error={errors?.reviewer_id}
+                                    />
+                                    <PemilihUser
+                                        id="approver_id"
+                                        label="Penyetuju"
+                                        options={kandidatPenyetuju}
+                                        value={form.data.approver_id}
+                                        onChange={(v) => form.setData('approver_id', v)}
+                                        error={errors?.approver_id}
+                                    />
+                                </div>
+                            ) : null}
+
                             <RevisionLog
                                 rows={logRows}
                                 onRows={setLogRows}
@@ -138,7 +185,7 @@ export default function DocumentsArsipCatatan() {
                                     strokeWidth={1.5}
                                     className="size-4"
                                 />
-                                Simpan &amp; Salin ke Web
+                                {gabungAktif ? 'Simpan & Terapkan ke PDF' : 'Simpan & Salin ke Web'}
                             </Button>
                             <Button asChild variant="ghost">
                                 <Link href={route('documents.published')}>Nanti Saja</Link>
@@ -193,10 +240,66 @@ export default function DocumentsArsipCatatan() {
                 buka={konfirmasi}
                 onUbahBuka={setKonfirmasi}
                 judul="Lanjutkan?"
-                pesan="Dokumen akan disalin ke wizard untuk diketik ulang. Berkas unggahan tetap bisa dilihat sebagai rujukan, dan sesudah dikirim dokumen langsung Berlaku."
+                pesan={
+                    gabungAktif
+                        ? 'Halaman 1–2 berkas PDF akan diganti dengan Cover dan Catatan Revisi hasil cetak sistem. Berkas asli tersimpan aman dan bisa diterapkan ulang bila lembar ini disunting lagi.'
+                        : 'Dokumen akan disalin ke wizard untuk diketik ulang. Berkas unggahan tetap bisa dilihat sebagai rujukan, dan sesudah dikirim dokumen langsung Berlaku.'
+                }
                 tombolYa="Ya, lanjutkan"
                 onKonfirmasi={kirim}
             />
         </AppLayout>
+    );
+}
+
+/**
+ * Pemilih Peninjau/Penyetuju tunggal — kembaran sederhana `UserPicker.Tunggal`
+ * (v2/dokumen/fields/UserPicker.tsx), TANPA konteks wizard: halaman ini bukan
+ * langkah schema, jadi kandidatnya datang langsung sebagai prop, bukan lewat
+ * `useWizard()`. Validasi "wajib diisi" ditegakkan SERVER
+ * (DocumentArsipController::simpanCatatan) — komponen ini hanya menampilkan
+ * galatnya kembali di bawah kotak yang tepat.
+ */
+function PemilihUser({
+    id,
+    label,
+    options,
+    value,
+    onChange,
+    error,
+}: {
+    id: string;
+    label: string;
+    options: Kandidat[];
+    value: number | '';
+    onChange: (v: number | '') => void;
+    error?: string;
+}) {
+    const sel = value === '' ? '' : String(value);
+
+    return (
+        <Field data-invalid={!!error || undefined}>
+            <FieldLabel htmlFor={id}>
+                {label}
+                <span className="text-destructive"> *</span>
+            </FieldLabel>
+            <Select value={sel || KOSONG} onValueChange={(v) => onChange(v === KOSONG ? '' : Number(v))}>
+                <SelectTrigger id={id} className="w-full" aria-invalid={!!error}>
+                    <SelectValue placeholder="— Pilih —" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value={KOSONG}>— Pilih —</SelectItem>
+                    {options.map((o) => (
+                        <SelectItem key={o.id} value={String(o.id)}>
+                            {o.nama} — {o.nrp} — {o.dept}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <FieldError errors={error ? [{ message: error }] : undefined} />
+            {options.length === 0 ? (
+                <p className="text-chart-3 mt-1 text-xs">Belum ada kandidat untuk peran ini.</p>
+            ) : null}
+        </Field>
     );
 }

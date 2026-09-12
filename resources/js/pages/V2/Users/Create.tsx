@@ -41,6 +41,7 @@ export default function UsersCreate({ departments, roles, roleLabels }: UsersFor
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         nrp: '',
+        jabatan_diajukan: '',
         nomor_hp: '',
         department_id: '',
         role: '',
@@ -86,6 +87,14 @@ export default function UsersCreate({ departments, roles, roleLabels }: UsersFor
                                     galat={errors.nrp}
                                     onUbah={(v) => setData('nrp', v)}
                                     wajib
+                                />
+                                <Isian
+                                    id="jabatan_diajukan"
+                                    label="Jabatan untuk Pengesahan"
+                                    petunjuk="Ditampilkan pada lembar pengesahan, mis. Group Leader ICT."
+                                    nilai={data.jabatan_diajukan}
+                                    galat={errors.jabatan_diajukan}
+                                    onUbah={(v) => setData('jabatan_diajukan', v)}
                                 />
                                 <Isian
                                     id="nomor_hp"

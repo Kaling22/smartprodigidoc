@@ -1,6 +1,7 @@
 import {
-    Delete02Icon, EraserIcon, FloppyDiskIcon, Mail01Icon, OctagonAlertIcon, PlugSocketIcon,
-    PulseIcon, RefreshCwIcon, RepeatIcon, RoboticIcon, SentIcon, ShieldKeyIcon,
+    Archive01Icon, Delete02Icon, EraserIcon, FloppyDiskIcon, InformationCircleIcon, Mail01Icon,
+    OctagonAlertIcon, PlugSocketIcon, PulseIcon, RefreshCwIcon, RepeatIcon, RoboticIcon, SentIcon,
+    ShieldKeyIcon,
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from '@inertiajs/react';
@@ -77,6 +78,7 @@ export default function PengaturanSistem({
     cadanganKeyTopeng,
     penyedia,
     kesehatan,
+    arsipGabungAktif,
 }: SistemProps) {
     return (
         <AppLayout judul="Konfigurasi Sistem">
@@ -89,6 +91,7 @@ export default function PengaturanSistem({
                         penyedia={penyedia}
                     />
                     <KartuUjiAi />
+                    <KartuArsipGabung aktif={arsipGabungAktif} />
                 </div>
 
                 <div className="grid gap-4 md:gap-6 lg:col-span-5">
@@ -103,9 +106,107 @@ export default function PengaturanSistem({
     );
 }
 
+/* ============================ ARSIP — GABUNG PDF ============================ */
+
+/**
+ * Saklar gabung-PDF dokumen lama (`App\Services\Print\ArsipPenggabung`).
+ *
+ * Satu boolean, jadi bentuknya sengaja jauh lebih sederhana dari kartu AI:
+ * `Switch` + tombol Simpan + konfirmasi, pola yang sama dengan `Field
+ * orientation="horizontal"` pada `KartuAi` di atas.
+ */
+function KartuArsipGabung({ aktif }: { aktif: boolean }) {
+    const { data, setData, put, processing } = useForm({ enabled: aktif });
+    const [konfirmasi, setKonfirmasi] = useState(false);
+
+    function minta(e: FormEvent) {
+        e.preventDefault();
+        setKonfirmasi(true);
+    }
+
+    return (
+        <form onSubmit={minta}>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <HugeiconsIcon
+                            icon={Archive01Icon}
+                            strokeWidth={1.5}
+                            className="text-primary size-4"
+                            aria-hidden="true"
+                        />
+                        Dokumen Lama — Gabung PDF
+                    </CardTitle>
+                    <CardDescription>
+                        Menentukan apa yang terjadi begitu lembar Catatan Revisi dokumen lama
+                        (SOP/SP/IK) disimpan.
+                    </CardDescription>
+                </CardHeader>
+
+                <CardContent>
+                    <Field orientation="horizontal">
+                        <Switch
+                            id="arsip-gabung-enabled"
+                            checked={data.enabled}
+                            onCheckedChange={(v) => setData('enabled', v)}
+                        />
+                        <div className="grid gap-1">
+                            <FieldLabel htmlFor="arsip-gabung-enabled">
+                                Potong halaman 1-2 &amp; ganti dengan Cover + Catatan Revisi
+                            </FieldLabel>
+                            <FieldDescription>
+                                Aktif (bawaan): begitu lembar Catatan Revisi disimpan, halaman 1-2
+                                berkas PDF asli langsung diganti dengan Cover dan Catatan Revisi hasil
+                                cetak sistem — dokumen tetap Berlaku, tanpa mengetik ulang isinya di
+                                wizard. Nonaktif: kembali ke alur lama — isi dokumen diketik ulang di
+                                wizard dan berkas unggahan tinggal jadi rujukan.
+                            </FieldDescription>
+                        </div>
+                    </Field>
+                </CardContent>
+
+                <CardFooter className="flex-wrap items-center justify-between gap-2">
+                    <span className="text-muted-foreground flex items-center gap-1.5 text-sm">
+                        <HugeiconsIcon
+                            icon={InformationCircleIcon}
+                            strokeWidth={1.5}
+                            className="size-4"
+                            aria-hidden="true"
+                        />
+                        Berkas asli tak pernah ditimpa — potongannya selalu dihitung ulang dari
+                        unggahan pertama.
+                    </span>
+                    <Button type="submit" disabled={processing}>
+                        {processing ? (
+                            <Spinner />
+                        ) : (
+                            <HugeiconsIcon icon={FloppyDiskIcon} strokeWidth={1.5} className="size-4" />
+                        )}
+                        Simpan
+                    </Button>
+                    <ConfirmDialog
+                        judul="Simpan setelan Dokumen Lama?"
+                        pesan={
+                            data.enabled
+                                ? 'Dokumen lama berikutnya yang lembar Catatan Revisinya disimpan akan langsung memotong halaman 1-2 PDF asli.'
+                                : 'Dokumen lama berikutnya akan kembali diketik ulang di wizard sesudah lembar Catatan Revisi disimpan.'
+                        }
+                        tombolYa="Ya, simpan"
+                        buka={konfirmasi}
+                        onUbahBuka={setKonfirmasi}
+                        onKonfirmasi={() => put(route('pengaturan.sistem.arsip-gabung'))}
+                    />
+                </CardFooter>
+            </Card>
+        </form>
+    );
+}
+
 /* ================================== AI ================================== */
 
-function KartuAi({ ai, keyTopeng, cadanganKeyTopeng, penyedia }: Omit<SistemProps, 'kesehatan'>) {
+function KartuAi({
+    ai, keyTopeng, cadanganKeyTopeng, penyedia,
+}: Omit<SistemProps, 'kesehatan' | 'arsipGabungAktif'>) {
     const { data, setData, put, processing, errors } = useForm({
         enabled: ai.enabled,
         provider: ai.provider ?? '',

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\DocumentService;
 use Database\Seeders\RolePermissionSeeder as Roles;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
@@ -36,13 +37,40 @@ class ManajemenUserDanPemusnahanTest extends TestCase
             ->put(route('users.update', $ns), [
                 'role' => Roles::ROLE_GROUP_LEADER,
                 'department_id' => $ns->department_id,
+                'jabatan_diajukan' => 'Group Leader ICT',
             ])
             ->assertRedirect(route('users.index'));
 
         $ns->refresh();
         $this->assertSame(User::JABATAN_GROUP_LEADER, $ns->jabatan);
+        $this->assertSame('Group Leader ICT', $ns->jabatan_diajukan);
         $this->assertTrue($ns->hasRole(Roles::ROLE_GROUP_LEADER));
         $this->assertFalse($ns->hasRole(Roles::ROLE_STAFF), 'peran lama harus dilepas, bukan ditumpuk');
+    }
+
+    /** Admin dapat menetapkan nama jabatan cetak tanpa mengubah kunci peran. */
+    public function test_buat_akun_menyimpan_jabatan_diajukan_terpisah_dari_peran(): void
+    {
+        $tanda = Str::upper(Str::random(8));
+        $dept = $this->aktorGl()->department;
+
+        $this->actingAs($this->admin())
+            ->post(route('users.store'), [
+                'name' => 'GL Uji '.$tanda,
+                'nrp' => 'GL-UJI-'.$tanda,
+                'jabatan_diajukan' => 'Group Leader ICT',
+                'nomor_hp' => null,
+                'email' => null,
+                'department_id' => $dept->id,
+                'role' => Roles::ROLE_GROUP_LEADER,
+                'password' => 'rahasia123',
+                'password_confirmation' => 'rahasia123',
+            ])
+            ->assertRedirect(route('users.index'));
+
+        $user = User::where('nrp', 'GL-UJI-'.$tanda)->firstOrFail();
+        $this->assertSame(User::JABATAN_GROUP_LEADER, $user->jabatan);
+        $this->assertSame('Group Leader ICT', $user->jabatan_diajukan);
     }
 
     /** MD & Admin bukan jabatan alur dokumen — jabatannya NULL, bukan nama perannya. */

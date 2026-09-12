@@ -84,6 +84,32 @@ class PengaturanController extends Controller
         );
     }
 
+    /**
+     * Saklar gabung-PDF dokumen lama (App\Services\Print\ArsipPenggabung).
+     *
+     * Aktif = menyimpan lembar Catatan Revisi arsip langsung memotong halaman
+     * 1-2 berkas asli dan menggantinya dengan Cover+Catatan Revisi; nonaktif =
+     * kembali ke alur lama, isi diketik ulang di wizard
+     * (DocumentArsipController::simpanCatatan). Boolean tunggal, jadi tak
+     * perlu FormRequest tersendiri — pola sama dengan bersihkanCache()/ujiEmail().
+     */
+    public function simpanArsipGabung(Request $request): RedirectResponse
+    {
+        $data = $request->validate(['enabled' => ['required', 'boolean']]);
+
+        $sebelum = Pengaturan::arsipGabungCoverAktif();
+        Pengaturan::simpan('arsip.gabung_cover_enabled', $data['enabled'] ? '1' : '0');
+
+        $this->audit->log('pengaturan.arsip_gabung_diubah', null, [
+            'sebelum' => $sebelum,
+            'sesudah' => (bool) $data['enabled'],
+        ]);
+
+        return back()->with('status', $data['enabled']
+            ? 'Setelan disimpan — dokumen lama kini langsung memotong halaman 1-2 PDF asli dengan Cover & Catatan Revisi.'
+            : 'Setelan disimpan — dokumen lama kembali ke alur lama, isi diketik ulang di wizard.');
+    }
+
     // ===================== 5c — Konfigurasi Sistem =====================
 
     public function sistem(): Response
@@ -105,6 +131,7 @@ class PengaturanController extends Controller
             'cadanganKeyTopeng' => $this->topeng($ai['cadangan_key']),
             'penyedia' => SimpanAiRequest::PENYEDIA,
             'kesehatan' => $this->kesehatan(),
+            'arsipGabungAktif' => Pengaturan::arsipGabungCoverAktif(),
         ]);
     }
 

@@ -215,12 +215,44 @@ class PembersihHtml
                 continue;
             }
 
+            // Gambar BERDIRI SENDIRI (bukan di dalam <p>/<li>) — bentuk yang
+            // ditulis editor yang gambarnya BLOK asli (mis. Lexical
+            // `DecoratorNode`), berbeda dari Quill lama yang gambarnya
+            // inline dan selalu terbungkus <p> (lihat cabang <img> di
+            // pecahInline() untuk bentuk ITU). Tanpa cabang ini, gambar
+            // seperti ini tersimpan aman tapi DIAM-DIAM tak pernah tercetak:
+            // pecahInline() cuma memeriksa ANAK sebuah simpul, dan <img>
+            // tak punya anak sama sekali.
+            if ($tag === 'img') {
+                $jalur = self::jalurGambar($anak);
+                if ($jalur !== null) {
+                    $blok[] = ['kind' => 'gambar', 'path' => $jalur, 'html' => ''];
+                }
+
+                continue;
+            }
+
             if ($tag === 'ol' || $tag === 'ul') {
                 $no = 0;
+                $liPertama = true;
+
                 foreach ($anak->childNodes as $li) {
                     if (! $li instanceof DOMElement || strtolower($li->tagName) !== 'li') {
                         continue;
                     }
+
+                    // "Lanjutkan Penomoran" (fitur toolbar Quill): butir
+                    // PERTAMA sebuah <ol> boleh membawa `data-mulai`, ditulis
+                    // `tulisSatu()` saat disimpan. Bulir (`ul`) tak bernomor,
+                    // jadi tandanya tak berarti di sana.
+                    if ($liPertama && $tag === 'ol') {
+                        $mulai = $li->getAttribute('data-mulai');
+                        if (self::mulaiSah($mulai)) {
+                            $no = ((int) $mulai) - 1;
+                        }
+                    }
+                    $liPertama = false;
+
                     $no++;
                     $tanda = $tag === 'ol' ? $no.'.' : '&bull;';
                     self::pecahInline($li, $blok, '<span class="mk">'.$tanda.'</span>', $kind);
@@ -428,7 +460,34 @@ class PembersihHtml
             return '';
         }
 
+        // Satu-satunya atribut yang dipertahankan di seluruh berkas ini —
+        // lihat {@see mulaiSah()} untuk kenapa ia aman disalin apa adanya
+        // (bilangan bulat murni, ditulis ulang bukan disalin mentah). Hanya
+        // berarti pada `<ol>` (bulir tak bernomor); `pisahkanDaftarQuill()`
+        // sudah dijalankan lebih dulu jadi `parentNode` di sini SELALU sudah
+        // `<ol>`/`<ul>` yang benar menurut `data-list` aslinya.
+        if ($tag === 'li') {
+            $indukOl = $simpul->parentNode instanceof DOMElement
+                && strtolower($simpul->parentNode->tagName) === 'ol';
+            $mulai = $simpul->getAttribute('data-mulai');
+
+            return $indukOl && self::mulaiSah($mulai)
+                ? '<li data-mulai="'.((int) $mulai).'">'.$isi.'</li>'
+                : "<li>{$isi}</li>";
+        }
+
         return "<{$tag}>".$isi."</{$tag}>";
+    }
+
+    /**
+     * `data-mulai` sah — fitur "Lanjutkan Penomoran" (butir daftar bernomor
+     * yang mulai menghitung dari sini, bukan dari 1). Batas 1-999 bukan
+     * batas teknis, sekadar akal sehat: tak ada prosedur yang benar-benar
+     * butuh 999 langkah.
+     */
+    private static function mulaiSah(string $nilai): bool
+    {
+        return $nilai !== '' && ctype_digit($nilai) && (int) $nilai >= 1 && (int) $nilai <= 999;
     }
 
     /**

@@ -59,6 +59,12 @@ class Pengaturan extends Model
     public const BAWAAN = [
         'site.prefix' => 'PPA-ADRO',
         'site.nama' => 'ADARO INDONESIA',
+        // Aktif = dokumen lama (arsip) yang lembar Catatan Revisinya baru
+        // disimpan langsung memotong halaman 1-2 berkas asli dan menggantinya
+        // dengan Cover + Catatan Revisi hasil cetak sistem (ArsipPenggabung),
+        // tanpa mengetik ulang isi dokumen di wizard. Admin bisa mematikannya
+        // untuk kembali ke alur lama (ketik ulang di wizard).
+        'arsip.gabung_cover_enabled' => '1',
     ];
 
     /**
@@ -137,6 +143,16 @@ class Pengaturan extends Model
     public static function namaSite(): string
     {
         return (string) self::ambil('site.nama');
+    }
+
+    /**
+     * Saklar gabung-PDF dokumen lama (ArsipPenggabung): aktif = potong
+     * halaman 1-2 berkas arsip lalu ganti dengan Cover + Catatan Revisi hasil
+     * cetak sistem; nonaktif = alur lama, isi dokumen diketik ulang di wizard.
+     */
+    public static function arsipGabungCoverAktif(): bool
+    {
+        return self::ambil('arsip.gabung_cover_enabled') === '1';
     }
 
     /**

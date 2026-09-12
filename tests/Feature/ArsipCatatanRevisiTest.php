@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Document;
 use App\Models\DocumentType;
+use App\Models\Pengaturan;
 use App\Models\User;
 use App\Services\DocumentService;
 use App\Services\Print\ArsipPenggabung;
@@ -17,7 +18,13 @@ use Tests\TestCase;
 
 /**
  * Lembar CATATAN REVISI dokumen LAMA yang diunggah (PLAN-REVISI-v6 Fase H),
- * sesudah pilihan "gabung" dicabut (rencana pra-produksi Fase 2, butir 7).
+ * sesudah pilihan "gabung" dicabut (rencana pra-produksi Fase 2, butir 7) —
+ * kini alur FALLBACK saat saklar Admin `arsip.gabung_cover_enabled` NONAKTIF
+ * (lihat {@see ArsipGabungCoverTest} untuk alur AKTIF, yang jadi bawaan).
+ *
+ * Saklarnya dipaksa nonaktif di `setUp()`: berkas ini murni menjaga jalur
+ * "ketik ulang di wizard" tetap ada & benar sebagai jalan turun, terlepas dari
+ * bawaan saklar yang berlaku hari ini.
  *
  * Yang dijaga di sini bergeser, dan pergeserannya disengaja. Dulu berkas
  * unggahan MEMANG ditimpa hasil gabung, jadi tiap test menghitung halaman PDF
@@ -34,6 +41,24 @@ use Tests\TestCase;
 class ArsipCatatanRevisiTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Pengaturan::simpan('arsip.gabung_cover_enabled', '0');
+    }
+
+    protected function tearDown(): void
+    {
+        // `Pengaturan::$ingatan` adalah larik STATIS seumur-proses — tak ikut
+        // di-rollback bersama transaksi DatabaseTransactions, jadi test
+        // berikutnya (mis. ArsipGabungCoverTest yang mengandalkan BAWAAN
+        // aktif) bisa mewarisi nilai '0' basi bila tak dibuang di sini.
+        Pengaturan::lupakanIngatan();
+
+        parent::tearDown();
+    }
 
     /** PDF sungguhan berisi $halaman halaman — FPDI menolak PDF tiruan. */
     private function pdfNyata(int $halaman): string

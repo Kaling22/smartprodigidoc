@@ -1,6 +1,7 @@
 import type { Cakupan } from '@/types/dasbor';
 import type { BarisDokumen, RincianPembaca } from '@/types/dokumen';
 import type { Departemen } from '@/types';
+import type { Kandidat } from '@/types/wizard';
 
 /**
  * Kontrak props Fase 11 — cerminan `DocumentDistributionController` dan
@@ -100,6 +101,25 @@ export interface ArsipCatatanProps {
     baris: unknown[];
     /** Edisi/Revisi yang BERLAKU saat dokumen dikirim (butir 7a). */
     revisiKirim: { edisi: number; revisi: number };
+    /**
+     * Saklar Admin (`Pengaturan::arsipGabungCoverAktif()`). Aktif = menyimpan
+     * lembar ini LANGSUNG memotong halaman 1-2 PDF asli dan menggantinya
+     * dengan Cover+Catatan Revisi; nonaktif = alur lama, isi diketik ulang di
+     * wizard. Menentukan teks & label tombol di halaman ini saja — bentuk
+     * kiriman `sections.catatan_revisi` tak berubah oleh saklar ini.
+     */
+    gabungAktif: boolean;
+    /**
+     * Kandidat Peninjau/Penyetuju — SATU sumber dengan wizard biasa
+     * (DocumentParticipantResolver). Hanya berarti saat `gabungAktif`: Cover
+     * yang digenerate butuh nama+jabatan keduanya, dan dokumen arsip tak
+     * pernah melewati alur tinjau sungguhan untuk mendapatkannya sendiri.
+     */
+    kandidatPeninjau: Kandidat[];
+    kandidatPenyetuju: Kandidat[];
+    /** Pilihan yang sudah tersimpan (mis. kembali menyunting lembar ini). */
+    reviewerId: number | null;
+    approverId: number | null;
     /**
      * SISA halaman V1 saja. Server BERHENTI mengirimnya sejak pilihan "gabung"
      * dicabut (rencana pra-produksi Fase 2) — tinggal di sini semata supaya

@@ -37,6 +37,7 @@ class UpdateUserRoleRequest extends StoreUserRequest
         return [
             'role' => $dasar['role'],
             'department_id' => $dasar['department_id'],
+            'jabatan_diajukan' => $dasar['jabatan_diajukan'],
         ];
     }
 }

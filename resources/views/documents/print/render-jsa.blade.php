@@ -120,7 +120,7 @@
     // "Jabatan : Group Leader (ICTMD)" — jabatan disambung DEPARTEMEN (permintaan
     // pemilik). Dipusatkan di User: peta lama di sini tak punya entri
     // `departemen_head`, jadi DH tercetak sebagai kunci mentah "departemen_head".
-    $jabatanLabel = fn ($u) => $u?->jabatanWithDepartment() ?? '-';
+    $jabatanLabel = fn ($u) => $u?->jabatanPengesahan() ?? '-';
     // Sudah pernah Berlaku (disetujui PJO) → SELURUH TTD bercap APPROVED. Memakai
     // published_at agar dokumen "Sedang Direvisi"/obsolete (yang dulu disahkan)
     // tetap menampilkan capnya.

@@ -195,6 +195,91 @@ class PembersihHtmlTest extends TestCase
     }
 
     /**
+     * "Lanjutkan Penomoran" (tombol toolbar `ql-mulai`, RichText.tsx):
+     * `data-mulai` pada butir PERTAMA sebuah `<ol>` bertahan tersimpan —
+     * dibaca `PembersihHtml::pecahBlok()` untuk memulai nomor cetak dari sana,
+     * bukan dari 1.
+     */
+    public function test_data_mulai_pada_ol_bertahan(): void
+    {
+        $this->assertSame(
+            '<ol><li data-mulai="3">ketiga</li><li>keempat</li></ol>',
+            PembersihHtml::bersihkan(
+                '<ol><li data-list="ordered" data-mulai="3">ketiga</li>'
+                .'<li data-list="ordered">keempat</li></ol>'
+            )
+        );
+    }
+
+    /** @return list<array{0: string}> */
+    public static function kasusMulaiTakSah(): array
+    {
+        return [
+            'nol' => ['0'],
+            'negatif' => ['-1'],
+            'bukan angka' => ['abc'],
+            'di atas batas' => ['1000'],
+            'desimal' => ['3.5'],
+            'berspasi' => [' 3'],
+        ];
+    }
+
+    #[DataProvider('kasusMulaiTakSah')]
+    public function test_data_mulai_tak_sah_dibuang(string $mulai): void
+    {
+        $this->assertSame(
+            '<ol><li>x</li></ol>',
+            PembersihHtml::bersihkan('<ol><li data-list="ordered" data-mulai="'.$mulai.'">x</li></ol>')
+        );
+    }
+
+    /** Bulir (`ul`) tak bernomor — `data-mulai` di sana tak berarti apa-apa, dibuang juga. */
+    public function test_data_mulai_pada_bulir_dibuang(): void
+    {
+        $this->assertSame(
+            '<ul><li>x</li></ul>',
+            PembersihHtml::bersihkan('<ol><li data-list="bullet" data-mulai="3">x</li></ol>')
+        );
+    }
+
+    /** `PembersihHtml::blok()` — nomor cetak lanjut dari `data-mulai`, bukan reset ke 1. */
+    public function test_blok_menomori_lanjut_dari_data_mulai(): void
+    {
+        $blok = PembersihHtml::blok(
+            '<p>Baris pertama</p><ol><li>pertama</li><li>kedua</li></ol>'
+            .'<p>Baris kedua</p><ol><li data-mulai="3">ketiga</li></ol>'
+        );
+
+        $bertanda = array_values(array_filter($blok, fn ($b) => str_contains($b['html'] ?? '', 'class="mk"')));
+
+        $this->assertSame('<span class="mk">1.</span>pertama', $bertanda[0]['html']);
+        $this->assertSame('<span class="mk">2.</span>kedua', $bertanda[1]['html']);
+        $this->assertSame('<span class="mk">3.</span>ketiga', $bertanda[2]['html']);
+    }
+
+    /**
+     * Gambar BERDIRI SENDIRI (bukan di dalam `<p>`/`<li>`) — bentuk editor
+     * bergambar BLOK asli (mis. `DecoratorNode` Lexical), beda dari Quill lama
+     * yang gambarnya selalu terbungkus `<p>`. Tanpa cabang `img` di
+     * `pecahBlok()`, gambar begini tersimpan aman tapi diam-diam tak pernah
+     * tercetak — `pecahInline()` cuma memeriksa ANAK sebuah simpul, dan `<img>`
+     * tak punya anak sama sekali.
+     */
+    public function test_blok_mengenali_gambar_berdiri_sendiri(): void
+    {
+        $blok = PembersihHtml::blok('<p>sebelum</p><img src="/storage/lampiran/ICT/SOP/foto.png"><p>sesudah</p>');
+
+        $this->assertSame(
+            [
+                ['kind' => 'teks', 'html' => 'sebelum'],
+                ['kind' => 'gambar', 'path' => 'lampiran/ICT/SOP/foto.png', 'html' => ''],
+                ['kind' => 'teks', 'html' => 'sesudah'],
+            ],
+            $blok
+        );
+    }
+
+    /**
      * Quill MENGGABUNG daftar bernomor dan berbulir yang berdampingan ke dalam
      * satu `<ol>`. Tanpa dipecah, bulirnya akan tercetak bernomor.
      */

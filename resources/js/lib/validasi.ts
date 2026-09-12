@@ -116,8 +116,11 @@ export function validasiWajib(root: HTMLElement): HTMLElement | null {
 
         const kosong = !String(el.value).trim();
         kotak.classList.toggle('pp-rt-invalid', kosong);
-        // `.ql-editor` contenteditable → focus() bekerja seperti pada <textarea>.
-        if (kosong && !pertama) pertama = kotak.querySelector<HTMLElement>('.ql-editor') ?? kotak;
+        // `[contenteditable=true]` — bukan kelas milik editor tertentu (Quill
+        // dulu `.ql-editor`, sekarang Lexical): focus() bekerja seperti pada
+        // <textarea> berkat atributnya, jadi editor mana pun boleh menggantikan
+        // yang ini tanpa baris ini ikut disunting.
+        if (kosong && !pertama) pertama = kotak.querySelector<HTMLElement>('[contenteditable=true]') ?? kotak;
     });
 
     return pertama;

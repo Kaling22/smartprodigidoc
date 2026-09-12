@@ -51,13 +51,21 @@ class RichTextAktivitasTest extends TestCase
     /**
      * Langkah 2 memasang editornya — bukan lagi <textarea> polos.
      *
-     * Sejak Fase 9 editornya dirakit di peramban, jadi yang diperiksa DUA hal:
-     * (a) schema yang sampai ke layar benar-benar menyebut kolomnya `rich_text`,
-     * dan (b) berkas yang menggambarnya memasang Quill beserta seluruh tombol
-     * yang diminta pemilik. Memeriksa markup halaman tak bisa lagi: isinya cuma
-     * satu atribut `data-page` berisi JSON.
+     * Editornya dirakit di peramban, jadi yang diperiksa DUA hal: (a) schema
+     * yang sampai ke layar benar-benar menyebut kolomnya `rich_text`, dan
+     * (b) berkas yang menggambarnya memasang Lexical beserta seluruh tombol
+     * yang diminta pemilik. Memeriksa markup halaman tak bisa lagi: isinya
+     * cuma satu atribut `data-page` berisi JSON.
+     *
+     * Sejak migrasi dari Quill (dua percobaan menambal daftar bernomor Quill
+     * berakhir dgn editornya mati sama sekali di peramban — lihat riwayat
+     * commit), pengunci Quill-nya (`ql-*`, `theme: 'snow'`) diganti pengunci
+     * Lexical — DIPERBARUI, bukan dihapus: janji "toolbar lengkap + ikon
+     * hugeicons" yang dijaganya tetap sama, cuma bentuk pemeriksaannya yang
+     * mengikuti editor baru (Lexical tak mendikte markup toolbar sama sekali,
+     * jadi tak ada lagi kelas `ql-*` yang bisa dicari).
      */
-    public function test_form_memasang_editor_quill(): void
+    public function test_form_memasang_editor_lexical(): void
     {
         $doc = $this->sopDraft();
         $doc->update(['current_step' => 2]);
@@ -76,26 +84,29 @@ class RichTextAktivitasTest extends TestCase
             'textarea lama tak boleh tersisa di cabang rich_text');
 
         $editor = file_get_contents(resource_path('js/components/v2/dokumen/fields/RichText.tsx'));
-        $this->assertStringContainsString("import('quill')", $editor, 'pustaka Quill harus dimuat komponen ini');
-        $this->assertStringContainsString("theme: 'snow'", $editor);
-        $this->assertStringContainsString('className="pp-rt"', $editor, 'kotak editor bertema SmartPro harus ada');
+        $this->assertStringContainsString("import('lexical')", $editor, 'pustaka Lexical harus dimuat komponen ini');
+        $this->assertStringContainsString('LexicalComposer', $editor, 'kerangka editor Lexical harus terpasang');
+        $this->assertStringContainsString('className="pp-rt', $editor, 'kotak editor bertema SmartPro harus ada');
         $this->assertStringContainsString('data-pp-rich', $editor, 'penanda validasi wajib-diisi harus ikut');
 
-        // Tombol yang diminta pemilik. Quill mengikatnya lewat kelas `ql-*`;
-        // ikonnya digambar sendiri, BUKAN SVG bawaan Quill.
-        foreach (['ql-bold', 'ql-italic', 'ql-underline', 'ql-blockquote', 'ql-list', 'ql-image', 'ql-clean'] as $tombol) {
-            $this->assertStringContainsString('"'.$tombol.'"', $editor, "tombol {$tombol} harus ada di toolbar");
+        // Tombol yang diminta pemilik — judul (title) tiap tombol, bukan lagi
+        // kelas `ql-*` Quill: Lexical tak mendikte markup toolbar sama sekali,
+        // toolbar-nya digambar React biasa (`ui-maia/button`).
+        foreach ([
+            'Tebal', 'Miring', 'Garis bawah', 'Kutipan',
+            'Daftar bernomor', 'Daftar berbutir', 'Gambar', 'Bersihkan format',
+        ] as $tombol) {
+            $this->assertStringContainsString('judul="'.$tombol.'"', $editor, "tombol {$tombol} harus ada di toolbar");
         }
 
         // Nama glifnya HUGEICONS sejak pohon V1 dihapus (2026-09-07) — kit ikon
-        // V2 (PATOKAN-GAYA-V2 §2), bukan lucide-react yang dulu dipakai berkas
-        // ini di pohon lama. Yang dijaga TETAP sama: kedelapan tombol punya
-        // glifnya sendiri, bukan SVG bawaan Quill yang tak sewarna aplikasi.
+        // V2 (PATOKAN-GAYA-V2 §2). Yang dijaga TETAP sama sejak Quill: kedelapan
+        // tombol punya glifnya sendiri.
         foreach ([
             'TextBoldIcon', 'TextItalicIcon', 'TextUnderlineIcon', 'QuoteDownIcon',
             'LeftToRightListNumberIcon', 'LeftToRightListBulletIcon', 'Image01Icon', 'EraserIcon',
         ] as $ikon) {
-            $this->assertStringContainsString('icon={'.$ikon.'}', $editor, "ikon {$ikon} harus hugeicons");
+            $this->assertStringContainsString('ikon={'.$ikon.'}', $editor, "ikon {$ikon} harus hugeicons");
         }
     }
 
@@ -364,6 +375,32 @@ class RichTextAktivitasTest extends TestCase
         } finally {
             @unlink($abs);
         }
+    }
+
+    /**
+     * "Lanjutkan Penomoran" (tombol toolbar `ql-mulai`, RichText.tsx) —
+     * daftar bernomor yang diselingi paragraf polos MELANJUTKAN nomornya di
+     * PDF, bukan mulai dari 1 lagi, saat butir pertama bertanda `data-mulai`.
+     *
+     * Ini pengunci untuk `PembersihHtml::pecahBlok()`, dibaca
+     * `ActivityPrintLayout::flatten()` — bukan untuk sisi editor (Quill,
+     * counter CSS `--mulai`, TAK bisa diuji lewat suite PHP ini).
+     */
+    public function test_daftar_bernomor_melanjutkan_penomoran_di_pdf(): void
+    {
+        $doc = $this->sopDraft('SOP Lanjutkan Penomoran');
+        $doc->contents()->create(['section_key' => 'aktivitas', 'value_json' => [[
+            'sub_judul' => 'Langkah', 'pic' => 'ICT',
+            'deskripsi' => '<p>Baris pertama</p><ol><li>pertama</li><li>kedua</li></ol>'
+                .'<p>Baris kedua</p><ol><li data-mulai="3">ketiga</li></ol>',
+        ]]]);
+
+        $teks = $this->teksPdf($doc->refresh());
+
+        $this->assertStringContainsString('1.pertama', $teks);
+        $this->assertStringContainsString('2.kedua', $teks);
+        $this->assertStringContainsString('3.ketiga', $teks,
+            'butir sesudah paragraf penyela harus melanjutkan nomor, bukan mulai dari 1 lagi');
     }
 
     /** Dokumen yang sama, baris fotonya dibuang — patokan pembanding. */

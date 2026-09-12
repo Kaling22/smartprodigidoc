@@ -455,6 +455,7 @@ Route::middleware('auth')->group(function () {
             */
             Route::get('pengaturan/sistem', [PengaturanController::class, 'sistem'])->name('pengaturan.sistem');
             Route::put('pengaturan/sistem/ai', [PengaturanController::class, 'simpanAi'])->name('pengaturan.sistem.ai');
+            Route::put('pengaturan/sistem/arsip-gabung', [PengaturanController::class, 'simpanArsipGabung'])->name('pengaturan.sistem.arsip-gabung');
             Route::post('pengaturan/sistem/uji-email', [PengaturanController::class, 'ujiEmail'])
                 ->middleware('throttle:3,1')->name('pengaturan.sistem.uji-email');
             // Uji koneksi AI (PLAN-PREPRODUKSI-v9 Fase 2a) — rem yang sama
