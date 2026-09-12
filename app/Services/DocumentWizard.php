@@ -139,8 +139,7 @@ class DocumentWizard
     }
 
     /**
-     * Tgl. Terbit & Tgl. Revisi kop cetak — HANYA untuk draft salinan arsip
-     * (TEMUAN-F8).
+     * Tgl. Revisi kop cetak — HANYA untuk draft salinan arsip.
      *
      * Dibatasi `salin_arsip_at` dengan sengaja. Dokumen yang benar-benar
      * ditinjau memperoleh tanggal terbitnya dari pengesahan, dan membiarkan
@@ -148,9 +147,10 @@ class DocumentWizard
      * dirakit tangan bisa memundurkan tanggal berlaku dokumen mana pun — batas
      * yang tak terlihat di layar, jadi ia harus dijaga di sini.
      *
-     * Kosong = jangan sentuh: bawaannya sudah dikirim server (published_at versi
-     * lama untuk terbit, hari ini untuk revisi), jadi field yang dikosongkan
-     * pengguna tak boleh diam-diam menghapus tanggal yang sudah tersimpan.
+     * Tanggal terbit/efektif sengaja TIDAK ditulis di sini: nilainya adalah
+     * tanggal efektif yang dimasukkan ketika dokumen lama didaftarkan, lalu
+     * diwariskan dari arsip asal saat salinan ini disahkan. Mengizinkan kiriman
+     * wizard menimpanya membuat tanggal efektif bergantung pada pengetikan ulang.
      */
     private function persistTanggalCetak(Request $request, Document $document): void
     {
@@ -158,12 +158,10 @@ class DocumentWizard
             return;
         }
 
-        foreach (['tanggal_terbit' => 'published_at', 'tanggal_revisi' => 'tanggal_revisi'] as $input => $kolom) {
-            $nilai = trim((string) $request->input($input, ''));
+        $nilai = trim((string) $request->input('tanggal_revisi', ''));
 
-            if ($nilai !== '' && ($tanggal = strtotime($nilai)) !== false) {
-                $document->{$kolom} = date('Y-m-d', $tanggal);
-            }
+        if ($nilai !== '' && ($tanggal = strtotime($nilai)) !== false) {
+            $document->tanggal_revisi = date('Y-m-d', $tanggal);
         }
     }
 

@@ -13,15 +13,22 @@
 
     $reviewDate = optional($document->reviews->firstWhere('decision', 'approved'))->updated_at?->format('d/m/Y') ?? '-';
     $pubDate = $document->published_at?->format('d/m/Y') ?? '-';
+    // Salinan arsip langsung disahkan saat dikirim, sehingga tidak memiliki
+    // record review. Tanggal paraf SH/DH harus tanggal pengesahan itu
+    // (`submitted_at`), bukan kosong atau tanggal efektif dokumen lama.
+    $approvalDate = $document->salin_arsip_at
+        ? ($document->submitted_at?->format('d/m/Y') ?? $pubDate)
+        : $pubDate;
+    $reviewOrApprovalDate = $document->salin_arsip_at ? $approvalDate : $reviewDate;
 
     // Peta peran → [penandatangan, tanggal]. "peninjau_penyetuju" (SP/IK) = satu
     // SH/DH; tanggalnya = tgl terbit (persetujuan final), fallback tgl tinjau.
-    $resolveRole = function ($role) use ($document, $reviewDate, $pubDate) {
+    $resolveRole = function ($role) use ($document, $reviewOrApprovalDate, $approvalDate, $pubDate) {
         return match ($role) {
             'pembuat' => [$document->creator, $document->created_at?->format('d/m/Y') ?? '-'],
-            'peninjau' => [$document->reviewer, $reviewDate],
-            'penyetuju' => [$document->approver, $pubDate],
-            'peninjau_penyetuju' => [$document->reviewer, $pubDate !== '-' ? $pubDate : $reviewDate],
+            'peninjau' => [$document->reviewer, $reviewOrApprovalDate],
+            'penyetuju' => [$document->approver, $approvalDate],
+            'peninjau_penyetuju' => [$document->reviewer, $approvalDate !== '-' ? $approvalDate : $reviewOrApprovalDate],
             default => [null, '-'],
         };
     };

@@ -172,7 +172,8 @@ export function RevisionLog({
                                 type="date"
                                 name="tanggal_terbit"
                                 value={tanggal.terbit}
-                                onChange={(e) => onTanggal({ terbit: e.target.value })}
+                                readOnly
+                                disabled
                             />
                             <p className="mt-1 text-xs text-muted-foreground">
                                 Bawaannya Tanggal Efektif yang diisi saat dokumen lamanya diunggah — bukan hari

@@ -56,7 +56,7 @@ class ArsipCatatanRevisiTest extends TestCase
     }
 
     /** Daftarkan dokumen lama; kembalikan barisnya. */
-    private function daftarkan(string $isiPdf, string $jenis = 'SOP'): Document
+    private function daftarkan(string $isiPdf, string $jenis = 'SOP', ?string $tanggalEfektif = null): Document
     {
         $gl = $this->gl();
 
@@ -68,6 +68,7 @@ class ArsipCatatanRevisiTest extends TestCase
             'edisi' => 2,
             'no_revisi' => 3,
             'berkas' => UploadedFile::fake()->createWithContent('lama.pdf', $isiPdf),
+            'tanggal_efektif' => $tanggalEfektif,
         ]);
 
         return Document::whereNotNull('arsip_path')->latest('id')->firstOrFail();
@@ -212,22 +213,21 @@ class ArsipCatatanRevisiTest extends TestCase
     }
 
     /**
-     * Tgl. Terbit & Tgl. Revisi kop = tanggal DOKUMEN LAMA, bukan hari
-     * pengetikan ulangnya (TEMUAN-F8).
+     * Tgl. Efektif kop = tanggal yang dimasukkan saat DOKUMEN LAMA diunggah,
+     * bukan hari pengetikan ulang maupun kiriman wizard.
      *
      * Dulu `sahkanSalinanArsip()` menulis `published_at = now()` tanpa syarat,
-     * jadi seluruh arsip yang disalin tampak terbit hari ini — dan tanggal
-     * revisinya mustahil diatur sama sekali karena kop membacanya dari
-     * `updated_at`, kolom yang berubah tiap kali dokumen tersimpan.
+     * jadi seluruh arsip yang disalin tampak efektif hari ini, alih-alih pada
+     * tanggal yang dicatat ketika berkas lamanya didaftarkan.
      *
      * Diuji sampai SESUDAH pengesahan, bukan cuma sesudah langkah wizard:
      * yang dulu rusak justru pengesahannya, dan draft yang tanggalnya benar
      * tetap salah begitu dikirim.
      */
-    public function test_tanggal_kop_salinan_arsip_diisi_manual_dan_bertahan_saat_disahkan(): void
+    public function test_tanggal_efektif_salinan_arsip_mewarisi_input_unggahan(): void
     {
         Storage::fake('local');
-        $doc = $this->daftarkan($this->pdfNyata(3));
+        $doc = $this->daftarkan($this->pdfNyata(3), 'SOP', '2018-02-03');
         $this->kirimCatatan($doc);
 
         $draft = $this->siapKirim(Document::where('revises_document_id', $doc->id)->firstOrFail());
@@ -244,6 +244,8 @@ class ArsipCatatanRevisiTest extends TestCase
             'action' => 'save',
             'edisi' => 2,
             'no_revisi' => 3,
+            // Kiriman yang dirakit sendiri pun tidak boleh mengganti tanggal
+            // efektif yang tercatat saat arsip awal didaftarkan.
             'tanggal_terbit' => '2019-03-04',
             'tanggal_revisi' => '2021-07-15',
             'sections' => ['catatan_revisi' => [
@@ -254,8 +256,8 @@ class ArsipCatatanRevisiTest extends TestCase
         $this->actingAs($this->gl())->post(route('documents.submit', $draft))->assertRedirect();
 
         $draft->refresh();
-        $this->assertSame('2019-03-04', $draft->published_at?->toDateString(),
-            'pengesahan salinan menimpa tanggal terbit yang diketik pengguna');
+        $this->assertSame('2018-02-03', $draft->published_at?->toDateString(),
+            'tanggal efektif salinan harus sama dengan input saat arsip didaftarkan');
         $this->assertSame('2021-07-15', $draft->tanggal_revisi?->toDateString());
     }
 
