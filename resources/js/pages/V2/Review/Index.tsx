@@ -1,21 +1,43 @@
 import {
-    ArrowTurnBackwardIcon, ClipboardCheckIcon, Exchange01Icon, FileEditIcon, InboxIcon, ViewIcon,
-} from '@hugeicons/core-free-icons';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { Link, router, usePage } from '@inertiajs/react';
+    ArrowTurnBackwardIcon,
+    ClipboardCheckIcon,
+    Exchange01Icon,
+    FileEditIcon,
+    InboxIcon,
+    ViewIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Link, router, usePage } from "@inertiajs/react";
 
-import { Badge } from '@/components/ui-maia/badge';
-import { Button } from '@/components/ui-maia/button';
+import { Badge } from "@/components/ui-maia/badge";
+import { Button } from "@/components/ui-maia/button";
 import {
-    Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,
-} from '@/components/ui-maia/card';
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui-maia/empty';
-import { ConfirmDialog } from '@/components/v2/ConfirmDialog';
-import { DataTable, Paginasi, type Kolom, type Paginator } from '@/components/v2/DataTable';
-import { NomorDokumen } from '@/components/v2/NomorDokumen';
-import { AppLayout } from '@/layouts/V2/AppLayout';
-import type { PageProps } from '@/types';
-import type { BarisTinjau } from '@/types/tinjau';
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui-maia/card";
+import {
+    Empty,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from "@/components/ui-maia/empty";
+import { ConfirmDialog } from "@/components/v2/ConfirmDialog";
+import {
+    DataTable,
+    Paginasi,
+    type Kolom,
+    type Paginator,
+} from "@/components/v2/DataTable";
+import { NomorDokumen } from "@/components/v2/NomorDokumen";
+import { PenyaringDokumen } from "@/components/v2/PenyaringDokumen";
+import { AppLayout } from "@/layouts/V2/AppLayout";
+import type { PageProps } from "@/types";
+import type { BarisTinjau } from "@/types/tinjau";
 
 /**
  * "Tinjau Dokumen" — kembaran V2 `pages/Review/Index.tsx`.
@@ -38,19 +60,39 @@ import type { BarisTinjau } from '@/types/tinjau';
  *  · Keadaan kosong memakai komponen `empty` resmi, bukan rakitan `div` + ikon.
  */
 export default function ReviewIndex() {
-    const { documents, statusRevisi } = usePage<
-        PageProps & { documents: Paginator<BarisTinjau>; statusRevisi: BarisTinjau[] }
+    const { documents, statusRevisi, filters } = usePage<
+        PageProps & {
+            documents: Paginator<BarisTinjau>;
+            statusRevisi: BarisTinjau[];
+            filters: Record<string, string | undefined>;
+        }
     >().props;
 
     const antrean: Kolom<BarisTinjau>[] = [
-        { judul: 'No. Dokumen', urut: 'nomor', render: (d) => <NomorDokumen doc={d} /> },
-        { judul: 'Judul', render: (d) => <span className="font-medium">{d.judul}</span> },
-        { judul: 'Jenis', render: (d) => <Badge variant="outline">{d.jenis ?? '—'}</Badge> },
-        { judul: 'Dept', render: (d) => <Badge variant="outline">{d.dept ?? '—'}</Badge> },
-        { judul: 'Pembuat', render: (d) => <span className="text-sm">{d.pembuat ?? '—'}</span> },
         {
-            judul: 'Edisi/Revisi',
-            urut: 'revisi',
+            judul: "No. Dokumen",
+            urut: "nomor",
+            render: (d) => <NomorDokumen doc={d} />,
+        },
+        {
+            judul: "Judul",
+            render: (d) => <span className="font-medium">{d.judul}</span>,
+        },
+        {
+            judul: "Jenis",
+            render: (d) => <Badge variant="outline">{d.jenis ?? "—"}</Badge>,
+        },
+        {
+            judul: "Dept",
+            render: (d) => <Badge variant="outline">{d.dept ?? "—"}</Badge>,
+        },
+        {
+            judul: "Pembuat",
+            render: (d) => <span className="text-sm">{d.pembuat ?? "—"}</span>,
+        },
+        {
+            judul: "Edisi/Revisi",
+            urut: "revisi",
             // Angka DOKUMEN (yang tercetak di kop), bukan penghitung putaran
             // peninjauan — lihat catatan di `Review/Show.tsx`.
             render: (d) => (
@@ -60,8 +102,8 @@ export default function ReviewIndex() {
             ),
         },
         {
-            judul: 'Aksi',
-            kelas: 'w-px text-right whitespace-nowrap',
+            judul: "Aksi",
+            kelas: "w-px text-right whitespace-nowrap",
             render: (d) => (
                 <div className="flex items-center justify-end gap-2">
                     <TombolPdf id={d.id} />
@@ -72,15 +114,28 @@ export default function ReviewIndex() {
                         ini mengantar ke halaman tinjau dan membukanya di sana. */}
                     {d.boleh_alih ? (
                         <Button asChild variant="outline" size="sm">
-                            <Link href={route('review.show', { document: d.id, alih: 1 })}>
-                                <HugeiconsIcon icon={Exchange01Icon} strokeWidth={1.5} className="size-4" />
+                            <Link
+                                href={route("review.show", {
+                                    document: d.id,
+                                    alih: 1,
+                                })}
+                            >
+                                <HugeiconsIcon
+                                    icon={Exchange01Icon}
+                                    strokeWidth={1.5}
+                                    className="size-4"
+                                />
                                 Alihkan
                             </Link>
                         </Button>
                     ) : null}
                     <Button asChild size="sm">
-                        <Link href={route('review.show', d.id)}>
-                            <HugeiconsIcon icon={ClipboardCheckIcon} strokeWidth={1.5} className="size-4" />
+                        <Link href={route("review.show", d.id)}>
+                            <HugeiconsIcon
+                                icon={ClipboardCheckIcon}
+                                strokeWidth={1.5}
+                                className="size-4"
+                            />
                             Tinjau
                         </Link>
                     </Button>
@@ -90,22 +145,40 @@ export default function ReviewIndex() {
     ];
 
     const revisi: Kolom<BarisTinjau>[] = [
-        { judul: 'No. Dokumen', urut: 'nomor', render: (d) => <NomorDokumen doc={d} /> },
-        { judul: 'Judul', render: (d) => <span className="font-medium">{d.judul}</span> },
-        { judul: 'Pembuat', render: (d) => <span className="text-sm">{d.pembuat ?? '—'}</span> },
         {
-            judul: 'Tahap',
-            render: () => <Badge variant="destructive">Ditolak — menunggu revisi pembuat</Badge>,
+            judul: "No. Dokumen",
+            urut: "nomor",
+            render: (d) => <NomorDokumen doc={d} />,
         },
         {
-            judul: 'Aksi',
-            kelas: 'w-px text-right whitespace-nowrap',
+            judul: "Judul",
+            render: (d) => <span className="font-medium">{d.judul}</span>,
+        },
+        {
+            judul: "Pembuat",
+            render: (d) => <span className="text-sm">{d.pembuat ?? "—"}</span>,
+        },
+        {
+            judul: "Tahap",
+            render: () => (
+                <Badge variant="destructive">
+                    Ditolak — menunggu revisi pembuat
+                </Badge>
+            ),
+        },
+        {
+            judul: "Aksi",
+            kelas: "w-px text-right whitespace-nowrap",
             render: (d) => (
                 <div className="flex items-center justify-end gap-2">
                     <TombolPdf id={d.id} />
                     <Button asChild variant="outline" size="sm">
-                        <Link href={route('documents.show', d.id)}>
-                            <HugeiconsIcon icon={ViewIcon} strokeWidth={1.5} className="size-4" />
+                        <Link href={route("documents.show", d.id)}>
+                            <HugeiconsIcon
+                                icon={ViewIcon}
+                                strokeWidth={1.5}
+                                className="size-4"
+                            />
                             Lihat
                         </Link>
                     </Button>
@@ -115,7 +188,7 @@ export default function ReviewIndex() {
                         tombolYa="Ya, batalkan"
                         onKonfirmasi={() =>
                             router.post(
-                                route('review.cancelRevision', d.id),
+                                route("review.cancelRevision", d.id),
                                 {},
                                 { preserveScroll: true },
                             )
@@ -137,8 +210,19 @@ export default function ReviewIndex() {
     ];
 
     return (
-        <AppLayout judul="Tinjau Dokumen" sub="Dokumen yang menunggu peninjauan Anda.">
+        <AppLayout
+            judul="Tinjau Dokumen"
+            sub="Dokumen yang menunggu peninjauan Anda."
+        >
             <Card>
+                <CardHeader className="border-b">
+                    <PenyaringDokumen
+                        url={route("review.index")}
+                        filters={filters}
+                        labelCari="Cari (no. dokumen / judul)"
+                        placeholderCari="mis. no. dokumen atau judul…"
+                    />
+                </CardHeader>
                 <CardContent className="px-0">
                     <DataTable
                         kolom={antrean}
@@ -154,7 +238,14 @@ export default function ReviewIndex() {
                                             className="size-6"
                                         />
                                     </EmptyMedia>
-                                    <EmptyTitle>Tidak ada dokumen untuk ditinjau.</EmptyTitle>
+                                    <EmptyTitle>
+                                        Tidak ada dokumen untuk ditinjau.
+                                    </EmptyTitle>
+                                    {filters.q ? (
+                                        <EmptyDescription>
+                                            Coba kata kunci lain.
+                                        </EmptyDescription>
+                                    ) : null}
                                 </EmptyHeader>
                             </Empty>
                         }
@@ -175,7 +266,9 @@ export default function ReviewIndex() {
                         />
                         Status Revisi
                     </CardTitle>
-                    <CardDescription>Dokumen yang Anda kembalikan.</CardDescription>
+                    <CardDescription>
+                        Dokumen yang Anda kembalikan.
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="px-0">
                     <DataTable
@@ -192,7 +285,14 @@ export default function ReviewIndex() {
                                             className="size-6"
                                         />
                                     </EmptyMedia>
-                                    <EmptyTitle>Tidak ada dokumen yang Anda tolak.</EmptyTitle>
+                                    <EmptyTitle>
+                                        Tidak ada dokumen yang Anda tolak.
+                                    </EmptyTitle>
+                                    {filters.q ? (
+                                        <EmptyDescription>
+                                            Coba kata kunci lain.
+                                        </EmptyDescription>
+                                    ) : null}
                                 </EmptyHeader>
                             </Empty>
                         }
@@ -206,8 +306,12 @@ export default function ReviewIndex() {
 function TombolPdf({ id }: { id: number }) {
     return (
         <Button asChild variant="outline" size="icon" title="Lihat PDF">
-            <a href={route('documents.pdf', id)} target="_blank" rel="noopener">
-                <HugeiconsIcon icon={FileEditIcon} strokeWidth={1.5} className="size-4" />
+            <a href={route("documents.pdf", id)} target="_blank" rel="noopener">
+                <HugeiconsIcon
+                    icon={FileEditIcon}
+                    strokeWidth={1.5}
+                    className="size-4"
+                />
             </a>
         </Button>
     );

@@ -1,0 +1,1 @@
+import{j as n,H as i,a6 as o,d as t}from"./app-C-vvHuKK.js";function r({className:a,...s}){return n.jsx(i,{icon:o,strokeWidth:2,"data-slot":"spinner",role:"status","aria-label":"Loading",className:t("size-4 animate-spin",a),...s})}export{r as S};

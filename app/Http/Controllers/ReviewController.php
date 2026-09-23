@@ -43,8 +43,16 @@ class ReviewController extends Controller
     {
         $user = $request->user();
 
+        // Cari nomor dokumen / judul (Fase 8) — sama pola dengan
+        // `DocumentController::index`. Ikut dipakai KEDUA tabel di bawah,
+        // persis seperti `sort`/`dir`: satu kotak cari untuk satu halaman.
+        $q = $request->input('q');
+        $cari = fn ($query) => $q
+            ? $query->where(fn ($w) => $w->where('doc_number', 'like', "%{$q}%")->orWhere('title', 'like', "%{$q}%"))
+            : $query;
+
         // Perlu ditinjau: menunggu (belum disentuh) + sedang ditinjau.
-        $documents = $this->akses->antrian($user, ['waiting_for_review', 'in_review'])
+        $documents = $cari($this->akses->antrian($user, ['waiting_for_review', 'in_review']))
             ->latest('submitted_at')
             ->urut($request->sort, $request->dir)
             ->paginate(15)->withQueryString();
@@ -54,7 +62,7 @@ class ReviewController extends Controller
         // Ikut memakai `sort`/`dir` yang SAMA dengan antrean di atasnya: kedua
         // tabel ada di satu halaman, dan membiarkan yang satu bisa diurutkan
         // sementara yang lain tidak justru terbaca sebagai tombol yang rusak.
-        $statusRevisi = $this->akses->antrian($user, ['rejected'])
+        $statusRevisi = $cari($this->akses->antrian($user, ['rejected']))
             ->latest('updated_at')
             ->urut($request->sort, $request->dir)
             ->get();
@@ -72,6 +80,7 @@ class ReviewController extends Controller
                 'boleh_alih' => $d->type?->code === 'JSA' && $d->reviewer_id === $user->id,
             ]),
             'statusRevisi' => $statusRevisi->map(fn (Document $d) => $d->barisDaftar($user))->values()->all(),
+            'filters' => $request->only('q'),
         ]);
     }
 
