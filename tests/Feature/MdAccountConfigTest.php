@@ -81,7 +81,7 @@ class MdAccountConfigTest extends TestCase
         $md = $this->md();
 
         $this->actingAs($this->admin())
-            ->post(route('users.mdConfig', $md), ['aksi' => 'reset_sandi', 'sandi_baru' => 'pendek'])
+            ->post(route('users.mdConfig', $md), ['aksi' => 'reset_sandi', 'sandi_baru' => 'abc'])
             ->assertSessionHasErrors('sandi_baru');
 
         $this->actingAs($this->admin())

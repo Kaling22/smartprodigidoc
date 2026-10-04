@@ -1,4 +1,6 @@
-import { ArrowLeft01Icon, FloppyDiskIcon, ListViewIcon } from '@hugeicons/core-free-icons';
+import {
+    ArrowLeft01Icon, FloppyDiskIcon, ListViewIcon, ShieldKeyIcon,
+} from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Link, useForm } from '@inertiajs/react';
 import { useState, type FormEvent, type ReactNode } from 'react';
@@ -20,14 +22,19 @@ import type { AkunProps } from '@/types/pengguna';
 /**
  * "Informasi Akun" — kembaran V2 `pages/Account/Info.tsx`.
  *
- * Yang bisa disunting pemiliknya sendiri hanya TIGA: foto, nomor HP, email.
- * Identitas (nama, NRP, jabatan, departemen, peran) tetap dikelola Admin — dan
- * itu bukan sekadar disembunyikan di layar: `PageController::updateAccount()`
- * memvalidasi persis ketiga field itu saja.
+ * Info akun yang bisa disunting pemiliknya sendiri hanya TIGA: foto, nomor
+ * HP, email. Identitas (nama, NRP, jabatan, departemen, peran) tetap dikelola
+ * Admin — dan itu bukan sekadar disembunyikan di layar:
+ * `PageController::updateAccount()` memvalidasi persis ketiga field itu saja.
  *
  * Pratinjau foto memakai `useState` + `URL.createObjectURL`. Penyimpanannya
  * sendiri dipakai bersama kanal mobile lewat `ProfilPengguna::perbarui()` —
  * jangan menduplikasinya di sini.
+ *
+ * Kartu "Ubah Kata Sandi" di bawahnya SENGAJA `<form>` & `useForm` terpisah,
+ * menembak `account.password` — beda endpoint dari info akun di atas, dan
+ * beda pula dari reset Admin (`Users/Index.tsx` → `users.resetPassword`),
+ * yang tanpa syarat sandi lama karena dipakai justru saat sandi lama lupa.
  *
  * Penyimpangan dari berkas V1, seluruhnya PATOKAN-GAYA-V2:
  *  · §3.2 — `rounded-full` dilepas dari `<Avatar>`: `v2/Avatar` sudah
@@ -205,7 +212,112 @@ export default function AccountInfo({ user }: AkunProps) {
                     </CardContent>
                 </Card>
             </form>
+
+            <KartuUbahSandi />
         </AppLayout>
+    );
+}
+
+/**
+ * Ubah kata sandi sendiri — form TERPISAH dari info akun di atas: keduanya
+ * menembak endpoint berbeda (`account.password` vs `account.update`), dan
+ * menyatukan validasinya dalam satu `useForm` akan membuat galat foto/email
+ * ikut menahan penggantian sandi begitu salah satunya salah isi.
+ */
+function KartuUbahSandi() {
+    const { data, setData, put, processing, errors, reset } = useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    });
+
+    function kirim(e: FormEvent) {
+        e.preventDefault();
+        put(route('account.password'), { onSuccess: () => reset() });
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <HugeiconsIcon
+                        icon={ShieldKeyIcon}
+                        strokeWidth={1.5}
+                        className="size-4"
+                        aria-hidden="true"
+                    />
+                    Ubah Kata Sandi
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={kirim} className="grid gap-4 sm:max-w-md">
+                    <Field data-invalid={!!errors.current_password || undefined}>
+                        <FieldLabel htmlFor="current_password">Kata Sandi Saat Ini</FieldLabel>
+                        <Input
+                            id="current_password"
+                            type="password"
+                            required
+                            value={data.current_password}
+                            aria-invalid={!!errors.current_password}
+                            onChange={(e) => setData('current_password', e.target.value)}
+                        />
+                        <FieldError
+                            errors={
+                                errors.current_password
+                                    ? [{ message: errors.current_password }]
+                                    : undefined
+                            }
+                        />
+                    </Field>
+
+                    <Field data-invalid={!!errors.password || undefined}>
+                        <FieldLabel htmlFor="password">Kata Sandi Baru</FieldLabel>
+                        <Input
+                            id="password"
+                            type="password"
+                            required
+                            minLength={4}
+                            placeholder="Minimal 4 karakter"
+                            value={data.password}
+                            aria-invalid={!!errors.password}
+                            onChange={(e) => setData('password', e.target.value)}
+                        />
+                        <FieldError
+                            errors={errors.password ? [{ message: errors.password }] : undefined}
+                        />
+                    </Field>
+
+                    <Field>
+                        <FieldLabel htmlFor="password_confirmation">
+                            Ulangi Kata Sandi Baru
+                        </FieldLabel>
+                        <Input
+                            id="password_confirmation"
+                            type="password"
+                            required
+                            minLength={4}
+                            value={data.password_confirmation}
+                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                        />
+                    </Field>
+
+                    <div>
+                        <Button type="submit" disabled={processing}>
+                            {processing ? (
+                                <Spinner />
+                            ) : (
+                                <HugeiconsIcon
+                                    icon={ShieldKeyIcon}
+                                    strokeWidth={1.5}
+                                    className="size-4"
+                                />
+                            )}
+                            Ganti Kata Sandi
+                        </Button>
+                    </div>
+                </form>
+            </CardContent>
+        </Card>
     );
 }
 

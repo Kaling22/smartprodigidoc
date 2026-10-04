@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AuditService;
 use App\Services\ProfilPengguna;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
 class PageController extends Controller
@@ -80,5 +83,30 @@ class PageController extends Controller
         );
 
         return redirect()->route('account.info')->with('status', 'Informasi akun berhasil diperbarui.');
+    }
+
+    /**
+     * Ganti kata sandi sendiri — wajib tahu sandi lama (`current_password`,
+     * dicek terhadap guard yang sedang login). Beda dari reset Admin di
+     * `UserManagementController::resetPassword()`, yang justru dipakai saat
+     * sandi lama SUDAH lupa dan tak bisa dibuktikan.
+     */
+    public function updatePassword(Request $request, AuditService $audit): RedirectResponse
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', Password::min(4)],
+        ], [
+            'current_password.current_password' => 'Kata sandi saat ini salah.',
+        ]);
+
+        $user->update(['password' => Hash::make($request->input('password'))]);
+
+        // Sandi TIDAK pernah ikut dicatat audit maupun ditampilkan ulang.
+        $audit->log('user.change_password');
+
+        return redirect()->route('account.info')->with('status', 'Kata sandi berhasil diganti.');
     }
 }

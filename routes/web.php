@@ -92,6 +92,9 @@ Route::middleware('auth')->group(function () {
         // Informasi Akun (semua peran) — lihat & sunting foto, no. HP, email
         Route::get('akun', [PageController::class, 'account'])->name('account.info');
         Route::put('akun', [PageController::class, 'updateAccount'])->name('account.update');
+        // Ubah kata sandi sendiri — wajib tahu sandi lama (beda dari reset
+        // Admin di bawah, yang justru dipakai saat sandi lama SUDAH lupa).
+        Route::put('akun/password', [PageController::class, 'updatePassword'])->name('account.password');
 
         /*
         | Ketersediaan diri: cuti / off day / dinas luar (FITUR-BARU-v4 §6).
@@ -388,6 +391,9 @@ Route::middleware('auth')->group(function () {
             Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
             Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
             Route::post('users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggleStatus');
+            // Reset sandi akun staf — jalan keluar saat pemiliknya lupa kata
+            // sandi dan tak bisa lagi memakai "Ubah Kata Sandi" sendiri.
+            Route::post('users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.resetPassword');
             // Konfigurasi akun Management Development (saklar AI, aktif/nonaktif,
             // reset sandi). Hanya Admin — sesuai ketetapan pemilik bahwa akun MD
             // dibuat & dikelola Admin saja.

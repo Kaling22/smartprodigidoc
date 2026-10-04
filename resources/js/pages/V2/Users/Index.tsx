@@ -20,6 +20,7 @@ import {
     Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle,
 } from '@/components/ui-maia/empty';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui-maia/field';
+import { Input } from '@/components/ui-maia/input';
 import {
     InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput,
 } from '@/components/ui-maia/input-group';
@@ -168,11 +169,11 @@ export default function UsersIndex() {
  * `destroy()` dan `toggleStatus()` menolaknya dengan 403 (P4, menyembunyikan
  * tombol bukan otorisasi).
  *
- * Kedua jendela konfirmasi dirender DI LUAR `StripAksi`: Radix melepas isi
- * menunya begitu item dipilih, jadi jendela yang lahir di dalamnya lenyap
- * sebelum sempat terlihat. Itemnya cuma memilih jendela mana yang menyala.
+ * Ketiga jendela dirender DI LUAR `StripAksi`: Radix melepas isi menunya
+ * begitu item dipilih, jadi jendela yang lahir di dalamnya lenyap sebelum
+ * sempat terlihat. Itemnya cuma memilih jendela mana yang menyala.
  */
-type Jendela = 'status' | 'hapus' | null;
+type Jendela = 'status' | 'hapus' | 'resetSandi' | null;
 
 function AksiBaris({ user, milikSendiri }: { user: BarisAdmin; milikSendiri: boolean }) {
     const [jendela, setJendela] = useState<Jendela>(null);
@@ -202,6 +203,14 @@ function AksiBaris({ user, milikSendiri }: { user: BarisAdmin; milikSendiri: boo
                         className="size-4"
                     />
                     {user.aktif ? 'Nonaktifkan' : 'Aktifkan'}
+                </DropdownMenuItem>
+
+                {/* Jalan keluar saat pemiliknya lupa sandi — tanpa syarat
+                    sandi lama, beda dari "Ubah Kata Sandi" di halaman Info
+                    Akun miliknya sendiri. */}
+                <DropdownMenuItem onSelect={() => setJendela('resetSandi')}>
+                    <HugeiconsIcon icon={ShieldKeyIcon} strokeWidth={1.5} className="size-4" />
+                    Reset Sandi
                 </DropdownMenuItem>
 
                 {/* Hapus DITOLAK bila user masih tertaut dokumen (lihat
@@ -236,7 +245,105 @@ function AksiBaris({ user, milikSendiri }: { user: BarisAdmin; milikSendiri: boo
                     router.delete(route('users.destroy', user.id), { preserveScroll: true })
                 }
             />
+
+            <DialogResetSandi
+                user={user}
+                buka={jendela === 'resetSandi'}
+                onUbahBuka={(b) => setJendela(b ? 'resetSandi' : null)}
+            />
         </div>
+    );
+}
+
+/**
+ * Reset sandi akun staf — dipakai Admin saat pemiliknya lupa kata sandi.
+ * Bukan `ConfirmDialog` (PATOKAN §3.8) karena butuh isian, bukan sekadar ya/tidak.
+ */
+function DialogResetSandi({
+    user,
+    buka,
+    onUbahBuka,
+}: {
+    user: BarisAdmin;
+    buka: boolean;
+    onUbahBuka: (buka: boolean) => void;
+}) {
+    const sandi = useForm({ password: '', password_confirmation: '' });
+
+    function kirim(e: FormEvent) {
+        e.preventDefault();
+        sandi.post(route('users.resetPassword', user.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                sandi.reset();
+                onUbahBuka(false);
+            },
+        });
+    }
+
+    return (
+        <Dialog
+            open={buka}
+            onOpenChange={(b) => {
+                onUbahBuka(b);
+                if (!b) sandi.reset();
+            }}
+        >
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Reset Sandi — {user.name}</DialogTitle>
+                    <DialogDescription>
+                        Sandi lama TIDAK diperlukan. Sampaikan sandi baru ke pemiliknya lewat
+                        kanal aman sesudah ini tersimpan.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={kirim} className="grid gap-4">
+                    <Field data-invalid={!!sandi.errors.password || undefined}>
+                        <FieldLabel htmlFor={`reset-sandi-${user.id}`}>Sandi Baru</FieldLabel>
+                        <Input
+                            id={`reset-sandi-${user.id}`}
+                            type="password"
+                            required
+                            minLength={4}
+                            placeholder="Minimal 4 karakter"
+                            value={sandi.data.password}
+                            aria-invalid={!!sandi.errors.password}
+                            onChange={(e) => sandi.setData('password', e.target.value)}
+                        />
+                        <FieldError
+                            errors={
+                                sandi.errors.password ? [{ message: sandi.errors.password }] : undefined
+                            }
+                        />
+                    </Field>
+
+                    <Field>
+                        <FieldLabel htmlFor={`reset-sandi-konfirmasi-${user.id}`}>
+                            Ulangi Sandi Baru
+                        </FieldLabel>
+                        <Input
+                            id={`reset-sandi-konfirmasi-${user.id}`}
+                            type="password"
+                            required
+                            minLength={4}
+                            placeholder="Ketik ulang sandi baru"
+                            value={sandi.data.password_confirmation}
+                            onChange={(e) => sandi.setData('password_confirmation', e.target.value)}
+                        />
+                    </Field>
+
+                    <div className="flex justify-end gap-2">
+                        <Button type="button" variant="ghost" onClick={() => onUbahBuka(false)}>
+                            Batal
+                        </Button>
+                        <Button type="submit" disabled={sandi.processing}>
+                            Simpan
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -442,8 +549,8 @@ function DialogKonfigurasiMd({ md }: { md: BarisAdmin }) {
                                     id={`sandi-${md.id}`}
                                     type="password"
                                     required
-                                    minLength={8}
-                                    placeholder="Kata sandi baru (min. 8 karakter)"
+                                    minLength={4}
+                                    placeholder="Kata sandi baru (min. 4 karakter)"
                                     value={sandi.data.sandi_baru}
                                     aria-invalid={!!sandi.errors.sandi_baru}
                                     onChange={(e) => sandi.setData('sandi_baru', e.target.value)}

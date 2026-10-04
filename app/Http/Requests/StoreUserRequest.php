@@ -27,7 +27,7 @@ class StoreUserRequest extends FormRequest
             // Pimpinan tanpa departemen (v3.1 §3.1); Admin dept opsional.
             'department_id' => ['nullable', 'exists:departments,id', 'required_unless:role,'.RolePermissionSeeder::ROLE_PIMPINAN.','.RolePermissionSeeder::ROLE_ADMIN],
             'role' => ['required', Rule::in(self::assignableRoles())],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', Password::min(4)],
         ];
     }
 

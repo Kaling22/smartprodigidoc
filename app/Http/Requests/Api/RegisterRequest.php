@@ -51,7 +51,7 @@ class RegisterRequest extends FormRequest
             // dikirim langsung, dan pendaftar dari HP tak pernah melihat
             // dropdown itu sama sekali.
             'department_id' => ['required', Rule::exists('departments', 'id')->where('is_active', true)],
-            'password' => ['required', 'confirmed', Password::min(8)],
+            'password' => ['required', 'confirmed', Password::min(4)],
         ];
     }
 

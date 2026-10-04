@@ -21,9 +21,6 @@ use Illuminate\Http\Response;
  */
 class DocumentExportController extends Controller
 {
-    /** Revisi per edisi: 0..4, lalu Edisi+1 Revisi 0 (CLAUDE.md §7). */
-    private const REVISI_TERTINGGI = 4;
-
     public function export(Request $request, string $type): Response
     {
         $user = $request->user();
@@ -54,7 +51,8 @@ class DocumentExportController extends Controller
         | input: parameter departemen berarti SH satu dept bisa menarik daftar
         | induk dept lain.
         */
-        $rantai = Document::where('document_type_id', $tipe->id)
+        $rantai = Document::with(['contents' => fn ($q) => $q->where('section_key', 'catatan_revisi')])
+            ->where('document_type_id', $tipe->id)
             ->unless($lintasDept, fn ($q) => $q->where('department_id', $user->department_id))
             ->get()
             ->keyBy('id');
@@ -104,10 +102,30 @@ class DocumentExportController extends Controller
      * Peta (Edisi, Revisi) → tanggal per dokumen, plus daftar kolom revisi yang
      * perlu dicetak.
      *
+     * Tanggal tiap revisi dibaca dari lembar CATATAN REVISI dokumen itu SENDIRI
+     * (`sections.catatan_revisi`, diisi manual — baik saat dokumen lama
+     * didaftarkan lewat `DocumentArsipController`, maupun lewat langkah "Log
+     * Revisi" wizard), BUKAN dari `published_at` versi-versi di rantai
+     * `revises_document_id`. Baris lembar itu SENGAJA terakumulasi lintas
+     * revisi (`DocumentWizard::persistRevisionLog` + salinan penuh section saat
+     * `requestRevision`), jadi dokumen yang berlaku SEKARANG sudah memegang
+     * seluruh riwayat tanggalnya sendiri — rantai hanya perlu ditelusuri untuk
+     * "Tanggal Efektif" (tanggal terbit PERTAMA, revisi 0, yang tak pernah
+     * dicatat di lembar ini).
+     *
+     * `no_rev` per baris TIDAK bertanda edisi (bebas diketik, tanpa batas atas
+     * — lihat komentar `DocumentWizard::persistRevisionLog`), jadi batas edisi
+     * dikenali dari POLA angkanya: naik selama masih satu edisi (1,2,3,4,5),
+     * lalu TURUN begitu masuk edisi berikutnya (kembali ke 1). Itulah yang
+     * memisahkan blok "Edisi 1" dari "Edisi 2" di grid, persis seperti yang
+     * sungguh diketik saat pendaftaran.
+     *
      * Lebar kolom ADAPTIF (keputusan pemilik B4+B6): edisi yang sudah selesai
-     * selalu penuh rev 0–4 — roll-over §7 hanya menaikkan edisi SETELAH revisi 4
-     * terlampaui, jadi edisi lama pasti punya kelimanya. Yang dipotong hanya
-     * edisi TERAKHIR, berhenti di revisi tertinggi yang benar-benar ada.
+     * selalu penuh 1..`DocumentService::MAKS_REVISI` — roll-over hanya
+     * menaikkan edisi SETELAH revisi tertinggi terlampaui, jadi edisi lama
+     * pasti punya semuanya. Yang dipotong hanya edisi TERAKHIR, berhenti di
+     * revisi tertinggi yang benar-benar ada (minimal SATU kolom, walau
+     * dokumennya belum pernah direvisi).
      *
      * @param  \Illuminate\Support\Collection<int,Document>  $dokumen  yang berlaku
      * @param  \Illuminate\Support\Collection<int,Document>  $rantai   semua versi, ber-key id
@@ -120,18 +138,21 @@ class DocumentExportController extends Controller
         $maxRevisi = 0;
 
         foreach ($dokumen as $dok) {
-            $peta = [];
+            // Root chain ditelusuri HANYA untuk "Tanggal Efektif": tanggal
+            // terbit pertama sebelum revisi apa pun, yang tak pernah punya
+            // baris di catatan_revisi. Berhenti sendiri di dokumen pertama
+            // (penunjuknya null) atau versi yang sudah dimusnahkan (tak ada
+            // di `$rantai`).
             $akar = $dok;
-
-            // Telusuri rantai revisi mundur lewat `revises_document_id`. Berhenti
-            // sendiri saat menemui dokumen pertama (penunjuknya null) atau versi
-            // yang sudah dimusnahkan (tak ada di `$rantai`).
             for ($versi = $dok; $versi; $versi = $rantai->get($versi->revises_document_id)) {
-                $peta[(int) ($versi->edisi ?: 1)][(int) $versi->no_revisi] = $versi->published_at;
                 $akar = $versi;
             }
 
-            $baris[] = ['dok' => $dok, 'peta' => $peta, 'efektif' => $akar->published_at];
+            $baris[] = [
+                'dok' => $dok,
+                'peta' => self::petaDariCatatanRevisi($dok),
+                'efektif' => $akar->published_at,
+            ];
 
             $edisi = (int) ($dok->edisi ?: 1);
             if ($edisi > $maxEdisi) {
@@ -144,9 +165,54 @@ class DocumentExportController extends Controller
 
         $kolom = [];
         for ($edisi = 1; $edisi <= $maxEdisi; $edisi++) {
-            $kolom[$edisi] = range(0, $edisi < $maxEdisi ? self::REVISI_TERTINGGI : $maxRevisi);
+            $kolom[$edisi] = range(1, $edisi < $maxEdisi
+                ? \App\Services\DocumentService::MAKS_REVISI
+                : max(1, $maxRevisi));
         }
 
         return [$baris, $kolom];
+    }
+
+    /**
+     * Bagi baris `catatan_revisi` dokumen ke dalam (edisi, revisi) → tanggal,
+     * mengenali batas edisi dari pola naik-lalu-turun pada `no_rev` (lihat
+     * docblock `matriks()`). Baris tanpa `no_rev` sah (≥1) atau tanpa tanggal
+     * diabaikan — bukan galat, cukup tak tercetak.
+     *
+     * @return array<int,array<int,\Illuminate\Support\Carbon>>
+     */
+    private static function petaDariCatatanRevisi(Document $dok): array
+    {
+        $peta = [];
+        $edisi = 1;
+        $noRevSebelumnya = null;
+
+        foreach ($dok->contentMap()['catatan_revisi'] ?? [] as $baris) {
+            if (! is_array($baris)) {
+                continue;
+            }
+
+            $noRev = (int) ($baris['no_rev'] ?? 0);
+            $tanggal = trim((string) ($baris['tanggal'] ?? ''));
+
+            if ($noRev < 1 || $tanggal === '') {
+                continue;
+            }
+
+            if ($noRevSebelumnya !== null && $noRev < $noRevSebelumnya) {
+                $edisi++;
+            }
+
+            try {
+                $peta[$edisi][$noRev] = \Illuminate\Support\Carbon::parse($tanggal);
+            } catch (\Throwable) {
+                // Tanggal tak valid (data lama yang diketik bebas) → lewati
+                // baris ini saja, jangan gagalkan seluruh ekspor.
+            }
+
+            $noRevSebelumnya = $noRev;
+        }
+
+        return $peta;
     }
 }

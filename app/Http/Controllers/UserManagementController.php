@@ -10,6 +10,7 @@ use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 
 /**
@@ -78,10 +79,10 @@ class UserManagementController extends Controller
 
         $data = $request->validate([
             'aksi' => ['required', 'in:ai,status,reset_sandi'],
-            'sandi_baru' => ['nullable', 'required_if:aksi,reset_sandi', 'string', 'min:8'],
+            'sandi_baru' => ['nullable', 'required_if:aksi,reset_sandi', 'string', 'min:4'],
         ], [
             'sandi_baru.required_if' => 'Kata sandi baru wajib diisi.',
-            'sandi_baru.min' => 'Kata sandi minimal 8 karakter.',
+            'sandi_baru.min' => 'Kata sandi minimal 4 karakter.',
         ]);
 
         return match ($data['aksi']) {
@@ -317,5 +318,25 @@ class UserManagementController extends Controller
         $this->audit->log('user.toggle_status', null, ['user_id' => $user->id, 'status' => $new]);
 
         return back()->with('status', "Status {$user->name} diubah menjadi {$new}.");
+    }
+
+    /**
+     * Reset sandi akun staf — jalan keluar saat pemiliknya lupa kata sandi
+     * dan tak bisa lagi membuktikan sandi lama lewat "Ubah Kata Sandi" sendiri
+     * (`PageController::updatePassword`). Tanpa syarat sandi lama, karena
+     * justru itu yang sudah lupa; makanya HANYA Admin yang boleh memicunya.
+     */
+    public function resetPassword(Request $request, User $user): RedirectResponse
+    {
+        $data = $request->validate([
+            'password' => ['required', 'confirmed', Password::min(4)],
+        ]);
+
+        $user->update(['password' => Hash::make($data['password'])]);
+
+        // Sandi TIDAK pernah ikut dicatat audit maupun ditampilkan ulang.
+        $this->audit->log('user.reset_password', null, ['user_id' => $user->id, 'nrp' => $user->nrp]);
+
+        return back()->with('status', "Kata sandi {$user->name} berhasil diganti. Sampaikan ke pemakainya lewat kanal aman.");
     }
 }
