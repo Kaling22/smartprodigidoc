@@ -330,6 +330,37 @@ class PembersihHtml
     }
 
     /**
+     * Siapkan HTML tersanitasi untuk CETAK, bukan untuk tabel berpaginasi:
+     * `<img src="/storage/…">` diganti data URI base64 lewat `$embed`
+     * (DomPDF tak bisa memuat `/storage/…` sendiri — alasan yang sama dengan
+     * {@see jalurGambar()}), atau DIBUANG bila `src`-nya bukan jalur lampiran
+     * yang sah / berkasnya sudah hilang dari disk. Sisa HTML-nya (p, strong,
+     * ol, ul, li, blockquote) dibiarkan APA ADANYA.
+     *
+     * Dipakai bab manual SP (`DocumentTypeSeeder::spSchema()`,
+     * `render.blade.php` layout `bab_manual`): isinya mengalir sebagai HTML
+     * BIASA, BUKAN lewat {@see blok()}/`ActivityPrintLayout` — itu akan
+     * membongkar `<ol>`/`<ul>` jadi teks bernomor per baris tabel, cocok
+     * untuk Aktivitas tapi bukan untuk bab yang mengalir bebas.
+     *
+     * @param  callable(string): ?string  $embed  {@see \App\Services\Print\PdfRenderer::viewData()}
+     */
+    public static function embedGambar(string $html, callable $embed): string
+    {
+        $hasil = preg_replace_callback('#<img src="([^"]*)">#', function (array $m) use ($embed) {
+            if (preg_match(self::POLA_GAMBAR, $m[1]) !== 1) {
+                return '';
+            }
+
+            $src = $embed(substr($m[1], strlen('/storage/')));
+
+            return $src !== null ? '<img class="bab-img" src="'.$src.'">' : '';
+        }, $html);
+
+        return $hasil ?? $html;
+    }
+
+    /**
      * Urai HTML potongan (bukan dokumen utuh) menjadi satu simpul pembungkus.
      *
      * Non-ASCII diubah dulu jadi entitas angka: tanpa itu `loadHTML` menebak

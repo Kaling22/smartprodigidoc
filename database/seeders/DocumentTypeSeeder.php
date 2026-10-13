@@ -29,9 +29,11 @@ class DocumentTypeSeeder extends Seeder
             ],
         );
 
-        // SP (Standar Parameter): layout 6 bab identik SOP; alur SATU SH/DH yang
-        // meninjau SEKALIGUS menyetujui (pengesahan 2 baris) — referensi
-        // docs/PPA-ADRO-SP-ICTMD-01.docx.
+        // SP (Standar Parameter): SEJAK keputusan pemilik 2026-10-06, isinya
+        // BUKAN lagi pola SOP (Tujuan/Ruang Lingkup/Referensi/Definisi/
+        // Aktivitas/Lampiran) — cuma Riwayat Revisi + bab bebas (lihat
+        // spSchema()). Alur tetap SATU SH/DH yang meninjau SEKALIGUS
+        // menyetujui (pengesahan 2 baris).
         // Kode tetap `SP` (dulu "Standar Produksi") — penomoran dibangun dari
         // kode ini, jadi mengubahnya akan memutus seluruh nomor yang terbit.
         DocumentType::updateOrCreate(
@@ -39,7 +41,7 @@ class DocumentTypeSeeder extends Seeder
             [
                 'name' => 'Standar Parameter', 'class' => 'inti',
                 'scope' => 'all_departments', 'is_active' => true,
-                'schema_json' => $this->standardSchema('SP', 'STANDAR PARAMETER', 'dual'),
+                'schema_json' => $this->spSchema(),
             ],
         );
 
@@ -348,6 +350,66 @@ class DocumentTypeSeeder extends Seeder
     }
 
     /**
+     * Schema SP (Standar Parameter) — keputusan pemilik 2026-10-06: BUKAN lagi
+     * turunan `standardSchema()` (Tujuan/Ruang Lingkup/Referensi/Definisi/
+     * Aktivitas/Lampiran dicopot semuanya). Isinya cuma SATU bab:
+     *
+     *  - `bab` — repeatable TANPA kolom PIC: Judul bebas diketik + Isi rich
+     *    text (field `isi`, sama seperti `deskripsi` pada Aktivitas). Wajib
+     *    minimal satu — dokumen harus punya isi.
+     *
+     * Bab `riwayat_revisi` (tabel No. Revisi/Tanggal/Keterangan) SEMPAT ada,
+     * dicabut lagi 2026-10-07 atas permintaan pemilik — langsung ke bab isi.
+     * Lembar "Log Revisi" (`sections.catatan_revisi`,
+     * `DocumentWizard::persistRevisionLog`) TETAP berjalan terpisah, tak
+     * tersentuh oleh ini.
+     *
+     * Kunci `layout` pada section `bab` BUKAN bagian pakem schema umum — ia
+     * cuma dibaca `render.blade.php` untuk memilih cabang cetak BARU (bab
+     * rich-text, dgn gambar di-embed base64 lewat
+     * `PembersihHtml::embedGambar()`), terpisah dari cabang lama "ada kolom
+     * pic" (Aktivitas) dan "tanpa pic" (Flowchart/Lampiran, yang mencetak
+     * teks ter-escape — tak cocok untuk HTML dari rich text editor).
+     */
+    private function spSchema(): array
+    {
+        $bab = $this->bernomor([
+            [
+                'key' => 'bab', 'nama' => 'ISI DOKUMEN', 'type' => 'repeatable_group',
+                'layout' => 'bab_manual', 'min_groups' => 1, 'required' => true,
+                'add_button_label' => '+ Tambah Bab',
+                'group_fields' => [
+                    ['key' => 'judul', 'label' => 'Judul Bab', 'type' => 'text', 'placeholder' => 'Judul Bab (Contoh: Parameter Operasional)'],
+                    ['key' => 'isi', 'label' => 'Isi', 'type' => 'rich_text', 'placeholder' => 'Uraikan isinya. Bisa ditebalkan, dibuat daftar bernomor, dikutip, atau disisipi foto.'],
+                ],
+            ],
+        ]);
+
+        return [
+            'doc_type' => 'SP',
+            'doc_type_label' => 'STANDAR PARAMETER',
+            'header' => '_kop',
+            'footer' => '_footer',
+            'footer_text' => 'Dokumen elektronik ini merupakan dokumen tidak terkendali apabila dicetak.',
+            // Halaman pengesahan sebagai COVER depan, sama seperti SOP/IK.
+            'cover_page' => '_cover',
+            'steps' => [
+                [
+                    'step' => 1,
+                    'title' => 'Isi Dokumen',
+                    'sections' => $bab,
+                ],
+                [
+                    'step' => 2,
+                    'title' => 'Verifikasi',
+                    'sections' => $this->participantSections('dual'),
+                ],
+            ],
+            'approval_page_layout' => $this->approvalLayout('dual'),
+        ];
+    }
+
+    /**
      * Schema IK (Instruksi Kerja) — HANYA tabel Aktivitas & Tanggung Jawab, lalu
      * langsung Halaman Pengesahan (tanpa Tujuan/Ruang Lingkup/Referensi/Definisi/
      * Lampiran). Alur satu SH/DH (dual). Referensi: docs/Instruksi-kerja.docx.
@@ -431,7 +493,13 @@ class DocumentTypeSeeder extends Seeder
         $rows = $flow === 'dual'
             ? [
                 ['role_label' => 'Dibuat Oleh', 'role' => 'pembuat'],
-                ['role_label' => 'Ditinjau dan Disetujui Oleh', 'role' => 'peninjau_penyetuju'],
+                // "Ditinjau dan Disetujui Oleh" (keputusan pemilik 2026-10-07):
+                // label itu tertabrak garis dua titik ":" di kotak pengesahan
+                // — kolomnya `white-space:nowrap` lebar tetap 37.3%, dikalibrasi
+                // utk label sependek "Disetujui Oleh" (lihat _cover.blade.php).
+                // SP/IK satu-satunya pemanggil flow 'dual'; JSA pakai baris
+                // sendiri di jsaSchema(), tak ikut tersentuh.
+                ['role_label' => 'Disetujui Oleh', 'role' => 'peninjau_penyetuju'],
             ]
             : [
                 ['role_label' => 'Dibuat Oleh', 'role' => 'pembuat'],

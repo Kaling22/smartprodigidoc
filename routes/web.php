@@ -193,6 +193,7 @@ Route::middleware('auth')->group(function () {
         Route::get('documents/{document}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
         Route::post('documents/{document}/step', [DocumentController::class, 'saveStep'])->name('documents.saveStep');
         Route::post('documents/{document}/autosave', [DocumentController::class, 'autosave'])->name('documents.autosave');
+        Route::put('documents/{document}/title', [DocumentController::class, 'updateTitle'])->name('documents.updateTitle');
         Route::post('documents/{document}/lampiran-upload', [DocumentController::class, 'uploadAttachment'])->name('documents.uploadAttachment');
         Route::post('documents/{document}/submit', [DocumentController::class, 'submit'])->name('documents.submit');
         Route::post('documents/{document}/withdraw', [DocumentController::class, 'withdraw'])->name('documents.withdraw');

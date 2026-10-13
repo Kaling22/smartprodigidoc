@@ -133,6 +133,10 @@
 
         .lampiran-judul { font-weight: bold; }
         .lampiran-img { max-width: 240pt; max-height: 190pt; margin-top: 3pt; page-break-inside: avoid; }
+        /* SP — gambar sisipan di bab manual (`DocumentTypeSeeder::spSchema()`,
+           layout `bab_manual`). Isinya mengalir sebagai HTML biasa (bukan
+           tabel), jadi lebarnya lega — mendekati FLOWCHART, bukan AKTIVITAS. */
+        .bab-img { max-width: 100%; max-height: 320pt; margin-top: 3pt; page-break-inside: avoid; }
         /* Bab yang berdiri sendiri sehalaman (FLOWCHART) — gambarnya boleh
            memakai hampir seluruh halaman: bagan alur yang diperkecil ke 240pt
            tak terbaca. 500pt menyisakan ruang untuk bilah bab & keterangan. */
@@ -295,7 +299,15 @@
             </div>
 
         @elseif ($type === 'repeatable_group')
-            @php $fields = collect($section['group_fields'] ?? $section['fields'] ?? []); $hasPic = $fields->contains('key', 'pic'); @endphp
+            @php
+                $fields = collect($section['group_fields'] ?? $section['fields'] ?? []);
+                $hasPic = $fields->contains('key', 'pic');
+                // Kunci BARU, khusus SP (keputusan pemilik 2026-10-06) — lihat
+                // `DocumentTypeSeeder::spSchema()`. Section jenis lain tak
+                // pernah membawanya, jadi kedua cabang baru di bawah TAK
+                // PERNAH tersentuh selain oleh SP.
+                $layout = $section['layout'] ?? null;
+            @endphp
 
             @if ($hasPic)
                 <div class="section-bar"{!! $pbBefore !!}>{{ $section['label'] }}{!! $anc !!}</div>
@@ -340,6 +352,49 @@
                         @endforeach
                     </tbody>
                 </table>
+            @elseif ($layout === 'bab_manual')
+                {{-- SP — bab bebas: judul diketik manual, isi lewat rich text
+                     editor (pola sama dgn kolom `deskripsi` Aktivitas — HTML
+                     SUDAH tersanitasi saat simpan). Tiap entri jadi bilah bab
+                     TERSENDIRI bernomor ROMAWI sendiri ("I.", "II.", "III.",
+                     … — keputusan pemilik 2026-10-07, DIGANTI dari sub-nomor
+                     "1.1"/"1.2" ala Aktivitas) — BUKAN satu bilah umum dgn
+                     entri di bawahnya, karena judulnya memang dimaksud jadi
+                     judul bab itu sendiri, bukan sub-judul di bawah satu
+                     payung tetap. Nomornya DIHITUNG dari posisi entri
+                     ($i + 1), BUKAN dari `$section['auto_number']` — section
+                     `bab` cuma SATU di schema (selalu "1."), sedangkan
+                     entrinya banyak dan masing-masing perlu angka Romawinya
+                     sendiri. `SchemaService::ROMAWI` mentok di X (10); lewat
+                     itu jatuh ke angka biasa — pola fallback yang SAMA dgn
+                     `SchemaService::denganPenomoran()`.
+                     Judul & isi SENGAJA tak dibungkus satu
+                     `page-break-inside:avoid`: isi rich text bisa panjang,
+                     jadi yang dijaga menempel ke paragraf pertama cukup
+                     bilah judulnya (`.section-bar` sudah `page-break-after:
+                     avoid`) — beda dari LAMPIRAN yang per-itemnya pendek.
+                     Isinya TAK lewat blok()/ActivityPrintLayout (itu akan
+                     membongkar <ol>/<ul> jadi teks bernomor, yang tak perlu
+                     di sini — bab ini mengalir sebagai HTML biasa, bukan
+                     tabel berpaginasi) — tapi gambarnya TETAP wajib lewat
+                     `embedGambar()`: tersimpan sbg `<img src="/storage/…">`,
+                     dan DomPDF tak bisa memuat jalur itu sendiri (sama
+                     alasan `$embed`/`$selAkt` ada di atas) — tanpa ini
+                     gambar yang diunggah penyusun diam-diam tak tercetak. --}}
+                @php
+                    $barisBab = collect(is_array($val) ? $val : [])
+                        ->filter(fn ($r) => is_array($r) && (trim((string) ($r['judul'] ?? '')) !== '' || trim((string) ($r['isi'] ?? '')) !== ''))
+                        ->values();
+                @endphp
+                @forelse ($barisBab as $i => $row)
+                    @php $romawiBab = \App\Services\SchemaService::ROMAWI[$i + 1] ?? ($i + 1); @endphp
+                    <div class="section-bar"{!! $i === 0 ? $pbBefore : '' !!}>{{ $romawiBab }}. {{ $row['judul'] ?? '' }}{!! $i === 0 ? $anc : '' !!}{!! $loop->last ? $ancAkhir : '' !!}</div>
+                    <div class="section-box">{!! \App\Services\RichText\PembersihHtml::embedGambar((string) ($row['isi'] ?? ''), $embed) !!}</div>
+                @empty
+                    {{-- Wajib minimal satu bab (`min_groups: 1`) — baris ini
+                         hanya terlihat bila draft belum lolos validasi Kirim. --}}
+                    <div class="section-bar"{!! $pbBefore !!}>{{ $section['label'] }}{!! $anc !!}{!! $ancAkhir !!}</div>
+                @endforelse
             @else
                 {{-- Grup non-PIC: FLOWCHART & LAMPIRAN. Satu cabang untuk keduanya
                      — susunannya sama (judul → gambar → keterangan), hanya isinya

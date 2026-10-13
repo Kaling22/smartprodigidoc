@@ -147,6 +147,44 @@ class KonfigurasiSistemTest extends TestCase
     }
 
     /**
+     * Penyedia `openai` (kunci LANGSUNG dari platform.openai.com, bukan lewat
+     * OpenRouter) — menjaga binding `AppServiceProvider::buatReviewer()` dan
+     * daftar tertutup `SimpanAiRequest::PENYEDIA` tetap sinkron.
+     */
+    public function test_openai_sebagai_penyedia_menghasilkan_reviewer_sungguhan(): void
+    {
+        Pengaturan::simpan('ai.enabled', '1');
+        Pengaturan::simpan('ai.provider', 'openai');
+        Pengaturan::simpan('ai.model', 'gpt-4o-mini');
+        Pengaturan::simpanRahasia('ai.key', 'kunci-uji-openai');
+        // DB pengaturan lokal ini punya BARIS NYATA utk ai.cadangan.* (provider
+        // openrouter + key beneran) dari pemakaian Admin sebelumnya — bukan
+        // bawaan kosong. `ambil()` memenangkan baris tabel atas default APA
+        // PUN yang dikirim, jadi satu-satunya cara menetralkannya DI SINI
+        // adalah menimpa baris KUNCI-nya sendiri (bukan providernya) — tanpa
+        // kunci, buatReviewer() selalu jatuh ke NullReviewer apa pun providernya.
+        Pengaturan::simpanRahasia('ai.cadangan.key', '');
+        config(['services.ai.cadangan.key' => null]);
+        $this->lupakanCache();
+
+        $reviewer = app(AiReviewerInterface::class);
+
+        $this->assertInstanceOf(\App\Services\Ai\OpenAiReviewer::class, $reviewer);
+        $this->assertTrue($reviewer->isEnabled());
+    }
+
+    /** Formulir setelan AI menerima `openai` sebagai penyedia yang sah. */
+    public function test_formulir_ai_menerima_openai_sebagai_penyedia(): void
+    {
+        $this->actingAs($this->orang('admin_it'))
+            ->put(route('pengaturan.sistem.ai'), $this->isian(['provider' => 'openai', 'model' => 'gpt-4o-mini', 'key' => 'sk-uji']))
+            ->assertSessionHasNoErrors();
+
+        $this->lupakanCache();
+        $this->assertSame('openai', Pengaturan::ai()['provider']);
+    }
+
+    /**
      * "AI dimatikan" dan "kunci belum diisi" WAJIB berbunyi berbeda.
      *
      * Inilah kegagalan yang memicu rencana pra-produksi Fase 3: baris `ai.key`
@@ -374,6 +412,24 @@ class KonfigurasiSistemTest extends TestCase
             ->post(route('pengaturan.sistem.uji-ai'))
             ->assertRedirect()
             ->assertSessionHas('status', fn ($p) => str_contains($p, 'terhubung') && str_contains($p, 'gemini-2.0-flash'));
+    }
+
+    /** Sama dengan test di atas, tapi penyedia `openai` — endpoint & autentikasinya beda dari Gemini/OpenRouter. */
+    public function test_uji_ai_openai_berhasil_menyebut_penyedia_dan_model(): void
+    {
+        $this->setelAi(['ai.enabled' => '1', 'ai.provider' => 'openai', 'ai.model' => 'gpt-4o-mini', 'ai.key' => 'kunci-benar']);
+        // Sama alasannya dengan test di atas — DB pengaturan lokal punya baris
+        // nyata utk cadangan openrouter; tanpa dinetralkan, baris "Cadangan"
+        // ikut terpanggil dan bisa gagal karena sebab tak ada hubungan dgn OpenAI.
+        $this->setelAi(['ai.cadangan.key' => '']);
+        config(['services.ai.cadangan.key' => null]);
+
+        Http::fake(['api.openai.com/*' => Http::response(['id' => 'gpt-4o-mini'], 200)]);
+
+        $this->actingAs($this->orang('admin_it'))
+            ->post(route('pengaturan.sistem.uji-ai'))
+            ->assertRedirect()
+            ->assertSessionHas('status', fn ($p) => str_contains($p, 'terhubung') && str_contains($p, 'gpt-4o-mini'));
     }
 
     /**

@@ -59,11 +59,27 @@ export interface KonteksWizard {
     catatanItem: Record<string, Record<string, CatatanBaris[]>>;
 }
 
-/** Bentuk seragam tiap komponen field. */
+/**
+ * Bentuk seragam tiap komponen field.
+ *
+ * `onChange` menerima nilai LANGSUNG atau FUNGSI pembaru `(nilaiLama) =>
+ * nilaiBaru`. Bentuk fungsi inilah yang membuat `RepeatableGroup` aman dari
+ * balapan antar-SAUDARA baris: Lexical (editor Isi) memanggil ulang
+ * `registerUpdateListener`-nya sendiri setiap kali POHON di sekitarnya
+ * dirender ulang — termasuk render yang dipicu baris LAIN yang baru saja
+ * dihapus — dan panggilan itu menutup `rows` dari render SEBELUM
+ * penghapusan. Dengan nilai LANGSUNG, panggilan telat itu menimpa balik
+ * penghapusannya (baris yang sudah dihapus muncul lagi, persis bug yang
+ * dilaporkan pemilik 2026-10-07). Dengan fungsi pembaru, React menjalankan
+ * TIAP `setState` terhadap hasil yang SEBELUMNYA — jadi panggilan telat
+ * beroperasi di atas array yang SUDAH berkurang, bukan salinan basi.
+ * Komponen field lain (Text, RichList, dst.) tetap boleh memanggil
+ * `onChange(nilai)` langsung seperti biasa — bentuk ini backward-compatible.
+ */
 export interface PropsField {
     section: SeksiSchema;
     value: NilaiSeksi;
-    onChange: (nilai: NilaiSeksi) => void;
+    onChange: (nilai: NilaiSeksi | ((nilaiLama: NilaiSeksi) => NilaiSeksi)) => void;
 }
 
 const Konteks = createContext<KonteksWizard | null>(null);

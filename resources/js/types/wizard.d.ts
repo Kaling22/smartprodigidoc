@@ -41,7 +41,7 @@ export interface CatatanYatim {
 /** Satu kolom di dalam `repeatable_group`. */
 export interface BidangSchema {
     key: string;
-    /** text | textarea | image | rich_text | document_picker */
+    /** text | textarea | date | image | rich_text | document_picker */
     type?: string;
     label?: string;
     placeholder?: string;

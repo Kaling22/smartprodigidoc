@@ -9,6 +9,7 @@ use App\Services\Ai\AiReviewerInterface;
 use App\Services\Ai\FallbackReviewer;
 use App\Services\Ai\GeminiReviewer;
 use App\Services\Ai\NullReviewer;
+use App\Services\Ai\OpenAiReviewer;
 use App\Services\Ai\OpenRouterReviewer;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
@@ -90,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
         return match ($provider) {
             'gemini' => new GeminiReviewer($key, $model),
             'openrouter' => new OpenRouterReviewer($key, $model),
+            'openai' => new OpenAiReviewer($key, $model),
             default => new NullReviewer(NullReviewer::TAK_LENGKAP),
         };
     }

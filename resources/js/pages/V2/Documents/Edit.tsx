@@ -6,6 +6,7 @@ import {
     FloppyDiskIcon,
     LockIcon,
     Message01Icon,
+    PencilEdit01Icon,
     RefreshCwIcon,
     SentIcon,
     ViewIcon,
@@ -30,6 +31,7 @@ import { Badge } from '@/components/ui-maia/badge';
 import { Button } from '@/components/ui-maia/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui-maia/card';
 import { ConfirmDialog } from '@/components/v2/ConfirmDialog';
+import { DialogUbahJudul } from '@/components/v2/DialogAksi';
 import {
     barisLogBaru,
     barisLogBerisi,
@@ -130,12 +132,25 @@ export default function DocumentsEdit() {
                 </span>
             }
             aksi={
-                <Button asChild variant="outline" size="sm">
-                    <a href={route('documents.pdf', doc.id)} target="_blank" rel="noopener">
-                        <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
-                        Lihat PDF
-                    </a>
-                </Button>
+                <div className="flex items-center gap-2">
+                    {editable ? (
+                        <DialogUbahJudul
+                            doc={{ id: doc.id, nomor: doc.nomor, judul: doc.judul }}
+                            pemicu={
+                                <Button variant="outline" size="sm">
+                                    <HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={1.5} />
+                                    Ubah Judul
+                                </Button>
+                            }
+                        />
+                    ) : null}
+                    <Button asChild variant="outline" size="sm">
+                        <a href={route('documents.pdf', doc.id)} target="_blank" rel="noopener">
+                            <HugeiconsIcon icon={File01Icon} strokeWidth={1.5} />
+                            Lihat PDF
+                        </a>
+                    </Button>
+                </div>
             }
         >
             <RailLangkah
@@ -645,7 +660,16 @@ function FormLangkah({
                                     key={sec.key}
                                     section={sec}
                                     value={nilai[sec.key]}
-                                    onChange={(v) => setNilai((lama) => ({ ...lama, [sec.key]: v }))}
+                                    // `v` boleh nilai langsung ATAU fungsi pembaru
+                                    // `(lama) => baru` — lihat docblock PropsField
+                                    // di konteks.tsx utk alasannya (balapan antar
+                                    // baris RepeatableGroup).
+                                    onChange={(v) =>
+                                        setNilai((lama) => ({
+                                            ...lama,
+                                            [sec.key]: typeof v === 'function' ? (v as (p: NilaiSeksi) => NilaiSeksi)(lama[sec.key]) : v,
+                                        }))
+                                    }
                                 />
                             ))
                         )}

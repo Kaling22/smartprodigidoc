@@ -104,7 +104,8 @@ class MdReviewController extends Controller
      * menambah satu terjemahan yang bisa salah tanpa memberi manfaat apa pun.
      *
      * - approve → `pending_approval`, PJO dinotifikasi
-     * - reject  → `rejected`, kembali ke pembuat (alasan WAJIB)
+     * - reject  → `rejected`, kembali ke pembuat DAN peninjau SH/DH yang
+     *             meloloskannya (alasan WAJIB)
      */
     public function store(Request $request, Document $document): RedirectResponse
     {
@@ -240,11 +241,23 @@ class MdReviewController extends Controller
         $document->update(['status' => 'rejected']);
         $this->audit->log('document.md_reject', $document->id);
 
+        // Penyusun & peninjau SH/DH yang meloloskannya ke tahap ini (keputusan
+        // pemilik 2026-10-09 — pola yang sama dengan ApprovalController::store()
+        // saat PJO menolak). Beda dari kasus PJO: SH/DH di sini sudah punya
+        // kolom `reviewer_id` sendiri, jadi tak perlu ditelusuri lewat `reviews`.
         Notification::send($document->penyusun(), new DocumentNotification(
             $document,
             "Dokumen {$document->doc_number} dikembalikan Management Development: {$alasan}",
             'bi-arrow-counterclockwise',
             'documents.edit',
+            penting: true,
+            catatan: $alasan,
+        ));
+        $document->reviewer?->notify(new DocumentNotification(
+            $document,
+            "Dokumen {$document->doc_number} yang Anda loloskan dikembalikan Management Development.",
+            'bi-exclamation-triangle',
+            'documents.show',
             penting: true,
             catatan: $alasan,
         ));

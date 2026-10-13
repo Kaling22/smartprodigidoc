@@ -56,7 +56,7 @@
  */
 import {
     CalendarRemove01Icon, CircleSlashIcon, Delete02Icon, InformationCircleIcon,
-    Message01Icon, OctagonAlertIcon, RefreshCwIcon, SentIcon,
+    Message01Icon, OctagonAlertIcon, PencilEdit01Icon, RefreshCwIcon, SentIcon,
 } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { useForm } from '@inertiajs/react';
@@ -244,6 +244,74 @@ export function DialogMasukan({
                         </>
                     ) : null}
                 </div>
+            }
+        />
+    );
+}
+
+/**
+ * "Ubah Judul Dokumen" — celah yang dilaporkan pemilik 2026-10-10: pembuat
+ * tak punya cara merevisi judul sejak H1 layout menggantikan kartu kop lama
+ * (lihat doc-comment `Edit.tsx`) — tak satu pun langkah wizard mengirim
+ * `title`, hanya `sections` berbasis schema.
+ *
+ * Jendela TERPISAH dari wizard langkah dengan sengaja: `title` kolom
+ * `documents`, bukan isi `document_contents`, dan berlaku lintas langkah —
+ * membebaninya ke satu langkah berarti pembuat harus membuka langkah itu
+ * dulu sekadar untuk mengubah judul.
+ */
+export function DialogUbahJudul({
+    doc,
+    ...kendali
+}: {
+    doc: { id: number; nomor: string; judul: string };
+    /** Tombol pembuka. Kosongkan bila jendelanya dikendalikan dari luar. */
+    pemicu?: ReactNode;
+    buka?: boolean;
+    onUbahBuka?: (buka: boolean) => void;
+}) {
+    const form = useForm({ title: doc.judul });
+
+    return (
+        <JendelaFormulir
+            {...kendali}
+            judul={
+                <span className="flex items-center gap-2">
+                    <HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={1.5} className="size-4" aria-hidden="true" />
+                    Ubah Judul — <span className="font-mono">{doc.nomor}</span>
+                </span>
+            }
+            sedangKirim={form.processing}
+            konfirmasiJudul="Simpan Judul Baru?"
+            konfirmasiPesan={`Ubah judul ${doc.nomor} menjadi "${form.data.title}"?`}
+            konfirmasiYa="Ya, simpan"
+            tombolKirim={
+                <>
+                    <HugeiconsIcon icon={PencilEdit01Icon} strokeWidth={1.5} className="size-4" />
+                    Simpan Judul
+                </>
+            }
+            onKirim={(tutup) =>
+                form.put(route('documents.updateTitle', doc.id), {
+                    preserveScroll: true,
+                    onSuccess: () => tutup(),
+                })
+            }
+            anak={
+                <FieldGroup>
+                    <Field data-invalid={!!form.errors.title || undefined}>
+                        <FieldLabel htmlFor={`judul-dok-${doc.id}`}>Judul dokumen</FieldLabel>
+                        <Input
+                            id={`judul-dok-${doc.id}`}
+                            required
+                            maxLength={255}
+                            value={form.data.title}
+                            aria-invalid={!!form.errors.title}
+                            onChange={(e) => form.setData('title', e.target.value)}
+                        />
+                        <FieldError errors={form.errors.title ? [{ message: form.errors.title }] : undefined} />
+                    </Field>
+                </FieldGroup>
             }
         />
     );

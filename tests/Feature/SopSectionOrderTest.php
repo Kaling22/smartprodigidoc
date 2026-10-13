@@ -311,8 +311,12 @@ class SopSectionOrderTest extends TestCase
         $grup = file_get_contents(resource_path('js/components/v2/dokumen/fields/RepeatableGroup.tsx'));
         $this->assertStringContainsString("field.type === 'document_picker'", $grup, 'combobox pemilih dokumen tak dirender');
         $this->assertStringContainsString('<DocumentPicker', $grup);
-        $this->assertStringContainsString('onChange={(teks) => ubahBaris(i, f.key, teks)}', $grup,
-            'kolom dokumen harus tetap terikat ke barisnya — kalau tidak, ketikan bebas hilang');
+        // Terikat lewat UID baris (bukan `i` mentah) sejak perbaikan 2026-10-07
+        // (tombol Hapus menimpa isi baris lain) — UID-nya tetap "milik" baris
+        // yang sama meski baris LAIN dihapus/bergeser, jaminan yang SAMA dgn
+        // sebelumnya ("kolom tetap terikat ke barisnya"), cuma lebih kukuh.
+        $this->assertStringContainsString('onChange={(teks) => ubahBaris(uid, f.key, teks)}', $grup,
+            'kolom dokumen harus tetap terikat ke barisnya (lewat UID) — kalau tidak, ketikan bebas hilang');
 
         $this->assertContains($rujukan->displayNumber(), collect($props['dokumenBerlaku'])->pluck('nomor')->all(),
             'dokumen Berlaku sedepartemen harus jadi pilihan');
@@ -327,18 +331,33 @@ class SopSectionOrderTest extends TestCase
         $this->assertNotContains('Foto / Gambar (opsional)', $label, 'lampiran SOP tak lagi mengunggah gambar');
     }
 
-    /** SP memakai fungsi schema yang sama tetapi TIDAK ikut berubah. */
-    public function test_sp_tidak_ikut_berubah(): void
+    /**
+     * SP (keputusan pemilik 2026-10-06, bab RIWAYAT REVISI dicabut lagi
+     * 2026-10-07) TIDAK LAGI memakai pola SOP sama sekali:
+     * Tujuan/Ruang Lingkup/Referensi/Definisi/Aktivitas/Lampiran/Flowchart
+     * semuanya dicopot, diganti SATU bab isi bebas —
+     * {@see \Database\Seeders\DocumentTypeSeeder::spSchema()}.
+     */
+    public function test_sp_hanya_bab_manual(): void
     {
         $schema = SchemaService::for(DocumentType::where('code', 'SP')->firstOrFail());
 
-        $this->assertNull($schema->findSection('flowchart'), 'SP belum diminta memakai bab FLOWCHART');
+        foreach (['tujuan', 'ruang_lingkup', 'referensi', 'definisi', 'aktivitas', 'lampiran', 'flowchart', 'riwayat_revisi'] as $kunci) {
+            $this->assertNull($schema->findSection($kunci), "SP tak lagi punya bab \"{$kunci}\"");
+        }
 
-        $lampiran = $schema->findSection('lampiran');
-        $this->assertSame('VI. LAMPIRAN', $lampiran['label'], 'lampiran SP tetap bab VI');
-        $this->assertTrue(
-            collect($lampiran['group_fields'])->contains('key', 'gambar'),
-            'lampiran SP tetap berupa unggah gambar',
+        $bab = $schema->findSection('bab');
+        $this->assertSame('I. ISI DOKUMEN', $bab['label']);
+        $this->assertSame('bab_manual', $bab['layout'] ?? null);
+        $this->assertTrue($bab['required'] ?? false, 'dokumen SP wajib punya minimal satu bab isi');
+        $this->assertFalse(
+            collect($bab['group_fields'])->contains('key', 'pic'),
+            'bab manual SP TIDAK punya kolom PIC — beda dari Aktivitas',
+        );
+        $this->assertSame(
+            'rich_text',
+            collect($bab['group_fields'])->firstWhere('key', 'isi')['type'] ?? null,
+            'isi bab memakai rich text editor, sama seperti deskripsi Aktivitas',
         );
     }
 }

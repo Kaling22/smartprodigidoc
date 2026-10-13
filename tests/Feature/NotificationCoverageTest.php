@@ -194,12 +194,45 @@ class NotificationCoverageTest extends TestCase
         }
     }
 
-    public function test_penolakan_approver_memberi_tahu_penyusun_dan_peninjau(): void
+    /**
+     * Keputusan pemilik 2026-10-09: dokumen yang lewat verifikasi_md sebelum
+     * sampai ke PJO, lalu DITOLAK PJO, harus mengabari TIGA pihak — bukan
+     * cuma penyusun & peninjau SH/DH seperti sebelumnya. MD tak punya kolom
+     * `reviewer_id` sendiri; ditemukan lewat `reviews` (ApprovalController::store()).
+     */
+    public function test_penolakan_approver_memberi_tahu_penyusun_peninjau_dan_md(): void
     {
         Notification::fake();
 
         $d = $this->draft();
         $sh = $this->aktorSh();
+        $md = $this->aktorMd();
+        $pjo = User::where('jabatan', User::JABATAN_PIMPINAN)->firstOrFail();
+        $d->forceFill(['status' => 'pending_approval', 'approver_id' => $pjo->id, 'reviewer_id' => $sh->id])->save();
+        // Jejak satu-satunya bahwa dokumen ini sempat lolos MD — persis bentuk
+        // yang ditulis MdReviewController::store().
+        $d->reviews()->create([
+            'reviewer_id' => $md->id, 'revision_round' => 0,
+            'decision' => 'approved', 'summary' => '[Management Development] Sistematika penulisan sesuai.',
+        ]);
+
+        $this->actingAs($pjo)
+            ->post(route('approvals.store', $d), ['decision' => 'reject', 'summary' => 'Belum sesuai format.'])
+            ->assertRedirect();
+
+        Notification::assertSentTo($d->creator, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'ditolak approver') && $n->catatan === 'Belum sesuai format.');
+        Notification::assertSentTo($sh, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'Anda loloskan') && $n->catatan === 'Belum sesuai format.');
+        Notification::assertSentTo($md, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'Anda loloskan') && $n->catatan === 'Belum sesuai format.');
+    }
+
+    /** Dokumen yang TAK PERNAH lewat MD (mis. jenis tanpa tahap itu) tak boleh mengirim notifikasi ke akun MD mana pun saat ditolak. */
+    public function test_penolakan_approver_tanpa_riwayat_md_tak_mengabari_md(): void
+    {
+        Notification::fake();
+
+        $d = $this->draft();
+        $sh = $this->aktorSh();
+        $md = $this->aktorMd();
         $pjo = User::where('jabatan', User::JABATAN_PIMPINAN)->firstOrFail();
         $d->forceFill(['status' => 'pending_approval', 'approver_id' => $pjo->id, 'reviewer_id' => $sh->id])->save();
 
@@ -207,7 +240,30 @@ class NotificationCoverageTest extends TestCase
             ->post(route('approvals.store', $d), ['decision' => 'reject', 'summary' => 'Belum sesuai format.'])
             ->assertRedirect();
 
-        Notification::assertSentTo($d->creator, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'ditolak approver'));
-        Notification::assertSentTo($sh, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'Anda loloskan'));
+        Notification::assertNotSentTo($md, DocumentNotification::class);
+    }
+
+    /**
+     * Keputusan pemilik 2026-10-09: ketika MD mengembalikan dokumen (tahap
+     * sistematika penulisan), peninjau SH/DH yang meloloskannya ke MD juga
+     * harus diberi tahu — bukan cuma penyusun seperti sebelumnya. Beda dari
+     * kasus PJO-menolak-MD: SH/DH di sini sudah punya kolom `reviewer_id`
+     * sendiri pada dokumen, jadi tak perlu ditelusuri lewat tabel `reviews`.
+     */
+    public function test_penolakan_md_memberi_tahu_penyusun_dan_peninjau(): void
+    {
+        Notification::fake();
+
+        $d = $this->draft();
+        $sh = $this->aktorSh();
+        $md = $this->aktorMd();
+        $d->forceFill(['status' => 'verifikasi_md', 'reviewer_id' => $sh->id])->save();
+
+        $this->actingAs($md)
+            ->post(route('review.md.store', $d), ['decision' => 'reject', 'summary' => 'Banyak typo di Bab II.'])
+            ->assertRedirect();
+
+        Notification::assertSentTo($d->creator, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'dikembalikan Management Development') && $n->catatan === 'Banyak typo di Bab II.');
+        Notification::assertSentTo($sh, fn (DocumentNotification $n) => $n->penting && str_contains($n->message, 'Anda loloskan') && $n->catatan === 'Banyak typo di Bab II.');
     }
 }

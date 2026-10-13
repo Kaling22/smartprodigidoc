@@ -35,17 +35,31 @@ class RichTextAktivitasTest extends TestCase
     }
 
     /**
-     * Satu kunci schema (`rich_text`), tiga jenis dokumen ikut — tanpa view atau
+     * Satu kunci schema (`rich_text`), dua jenis dokumen ikut — tanpa view atau
      * route baru per jenis (CLAUDE.md §3/§7).
+     *
+     * SP TIDAK ikut loop ini sejak keputusan pemilik 2026-10-06: ia tak lagi
+     * punya section `aktivitas` sama sekali (lihat
+     * `DocumentTypeSeeder::spSchema()`) — kolom rich text-nya sekarang `isi`
+     * di section `bab`, diperiksa tersendiri di bawah.
      */
-    public function test_deskripsi_aktivitas_bertipe_rich_text_di_sop_sp_dan_ik(): void
+    public function test_deskripsi_aktivitas_bertipe_rich_text_di_sop_dan_ik(): void
     {
-        foreach (['SOP', 'SP', 'IK'] as $kode) {
+        foreach (['SOP', 'IK'] as $kode) {
             $schema = \App\Services\SchemaService::for(DocumentType::where('code', $kode)->firstOrFail());
             $bidang = collect($schema->findSection('aktivitas')['group_fields'] ?? [])->firstWhere('key', 'deskripsi');
 
             $this->assertSame('rich_text', $bidang['type'] ?? null, "kolom deskripsi {$kode} harus rich_text");
         }
+    }
+
+    /** Kembaran guard di atas, khusus bab manual SP (bukan Aktivitas). */
+    public function test_isi_bab_manual_sp_bertipe_rich_text(): void
+    {
+        $schema = \App\Services\SchemaService::for(DocumentType::where('code', 'SP')->firstOrFail());
+        $bidang = collect($schema->findSection('bab')['group_fields'] ?? [])->firstWhere('key', 'isi');
+
+        $this->assertSame('rich_text', $bidang['type'] ?? null, 'kolom isi bab SP harus rich_text');
     }
 
     /**

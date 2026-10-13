@@ -354,4 +354,62 @@ class PembersihHtmlTest extends TestCase
             PembersihHtml::bersihkan('<p>Ukuran ±5° — “aman”</p>')
         );
     }
+
+    /**
+     * `embedGambar()` — dipakai bab manual SP (render.blade.php, layout
+     * `bab_manual`): isinya dicetak sebagai HTML yang MENGALIR, bukan tabel
+     * berpaginasi spt Aktivitas, jadi gambarnya tak lewat
+     * blok()/ActivityPrintLayout. Tanpa ini `<img src="/storage/…">`
+     * tercetak APA ADANYA, dan DomPDF tak bisa memuat jalur itu sendiri —
+     * gambar yang diunggah penyusun diam-diam lenyap dari PDF.
+     */
+    public function test_embed_gambar_mengganti_src_storage_dengan_data_uri(): void
+    {
+        $embed = fn (string $jalur) => 'data:image/png;base64,SIDIKJALUR-'.$jalur;
+
+        $hasil = PembersihHtml::embedGambar(
+            '<p>Sebelum</p><p><img src="/storage/lampiran/ICTMD/SP/foto.png"></p><p>Sesudah</p>',
+            $embed,
+        );
+
+        $this->assertSame(
+            '<p>Sebelum</p><p><img class="bab-img" src="data:image/png;base64,SIDIKJALUR-lampiran/ICTMD/SP/foto.png"></p><p>Sesudah</p>',
+            $hasil,
+        );
+    }
+
+    /** Berkas yang sudah hilang dari disk ($embed memulangkan null) → <img> dibuang, bukan dibiarkan rusak. */
+    public function test_embed_gambar_membuang_img_saat_berkas_hilang(): void
+    {
+        $hasil = PembersihHtml::embedGambar(
+            '<p>Teks</p><p><img src="/storage/lampiran/ICTMD/SP/hilang.png"></p>',
+            fn () => null,
+        );
+
+        $this->assertSame('<p>Teks</p><p></p>', $hasil);
+    }
+
+    /** `src` di luar pola lampiran yang sah (lihat POLA_GAMBAR) tak pernah dikirim ke $embed. */
+    public function test_embed_gambar_mengabaikan_src_di_luar_pola_lampiran(): void
+    {
+        $dipanggil = false;
+        $embed = function () use (&$dipanggil) {
+            $dipanggil = true;
+
+            return 'tak-boleh-dipakai';
+        };
+
+        $hasil = PembersihHtml::embedGambar('<p><img src="https://luar.example.com/a.png"></p>', $embed);
+
+        $this->assertSame('<p></p>', $hasil);
+        $this->assertFalse($dipanggil, '$embed tak boleh dipanggil untuk src yang bukan lampiran sah');
+    }
+
+    /** HTML tanpa gambar sama sekali lolos apa adanya — tak ada regex yang nyasar. */
+    public function test_embed_gambar_membiarkan_html_tanpa_gambar(): void
+    {
+        $html = '<p>Teks <strong>tebal</strong></p><ul><li>Butir</li></ul>';
+
+        $this->assertSame($html, PembersihHtml::embedGambar($html, fn () => 'tak-dipakai'));
+    }
 }

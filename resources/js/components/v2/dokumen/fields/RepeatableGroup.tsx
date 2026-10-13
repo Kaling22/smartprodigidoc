@@ -112,6 +112,13 @@ export function RepeatableGroup({ section, value, onChange }: PropsField) {
     const babMati = Boolean(sakelar) && !babOn;
     const nomor = (i: number) => (babOn ? prefix : prefixMati) + (i + 1);
 
+    /**
+     * Array baris TERKINI untuk sebuah pembaruan — baik dari `rows` render ini
+     * maupun dari nilai yang baru saja ditulis pembaru LAIN dalam batch
+     * `setState` yang sama (lihat docblock `onChange` di `konteks.tsx`).
+     */
+    const sebagaiBaris = (nilai: unknown): Baris[] => (Array.isArray(nilai) ? (nilai as Baris[]) : rows);
+
     /*
     | Menulis BEBERAPA kolom satu baris sekaligus.
     |
@@ -119,15 +126,39 @@ export function RepeatableGroup({ section, value, onChange }: PropsField) {
     | menutup `rows` yang SAMA, jadi yang kedua menimpa hasil yang pertama dan
     | satu kolomnya diam-diam kosong. Dipakai `judul_ke` (butir 6), yang mengisi
     | nomor dan judul ke dua kolom berbeda dalam satu pemilihan.
+    |
+    | DUA pengaman dipasang sekaligus di sini, keduanya lahir dari bug yang
+    | sama (dilaporkan pemilik 2026-10-07: tombol Hapus tak menghapus apa-apa
+    | begitu kolom Isi/rich text sudah diketik):
+    |
+    |  1. **Dituju lewat UID baris, bukan indeks `i` mentah.** Editor Isi
+    |     (Lexical) memanggil ulang listener-nya sendiri tiap kali pohon di
+    |     sekitarnya dirender ulang — termasuk SESUDAH baris lain dihapus —
+    |     dan panggilan telat itu menutup `i` dari posisi SEBELUM penghapusan.
+    |     Bila baris lain sudah bergeser naik mengisi posisi itu, memakai `i`
+    |     mentah akan menimpa ISI BARIS YANG SALAH (gejala: baris yang masih
+    |     ada tiba-tiba menampilkan tulisan baris yang sudah dihapus). UID
+    |     dicari ulang di `uids.current` SAAT pembaruan benar-benar jalan —
+    |     kalau baris pemilik UID itu sudah lenyap (dihapus), pembaruannya
+    |     diam-diam dilewati; tak pernah menimpa baris lain.
+    |  2. **`onChange` memakai FUNGSI PEMBARU**, bukan larik langsung, supaya
+    |     React menjalankannya di atas hasil `setState` SEBELUMNYA dalam
+    |     batch yang sama — bukan salinan `rows` yang sudah basi begitu ada
+    |     DUA pembaruan beruntun (hapus + panggilan telat Lexical).
     */
-    const tulisBaris = (i: number, tambalan: Baris) =>
-        onChange(rows.map((r, n) => (n === i ? { ...r, ...tambalan } : r)));
+    const tulisBaris = (uid: number, tambalan: Baris) =>
+        onChange((lama: unknown) => {
+            const arr = sebagaiBaris(lama);
+            const idx = uids.current.indexOf(uid);
 
-    const ubahBaris = (i: number, fkey: string, teks: string) => tulisBaris(i, { [fkey]: teks });
+            return idx === -1 || idx >= arr.length ? arr : arr.map((r, n) => (n === idx ? { ...r, ...tambalan } : r));
+        });
+
+    const ubahBaris = (uid: number, fkey: string, teks: string) => tulisBaris(uid, { [fkey]: teks });
 
     const hapus = (i: number) => {
         uids.current.splice(i, 1);
-        onChange(rows.filter((_, n) => n !== i));
+        onChange((lama: unknown) => sebagaiBaris(lama).filter((_, n) => n !== i));
     };
 
     return (
@@ -169,53 +200,60 @@ export function RepeatableGroup({ section, value, onChange }: PropsField) {
                     ? { 'data-pp-warn-bab': section.label ?? section.key }
                     : {})}
             >
-                {rows.map((row, i) => (
-                    <div key={uids.current[i]} data-pp-baris className="relative mb-3 rounded-lg border bg-muted/40 p-3">
-                        <div className="mb-2 flex items-center justify-between">
-                            {prefix ? (
-                                <span className="rounded-md bg-primary px-2 py-0.5 font-mono text-xs text-primary-foreground">
-                                    {nomor(i)}
-                                </span>
-                            ) : (
-                                <span />
-                            )}
-                            <Button type="button" variant="outline" size="sm" onClick={() => hapus(i)}>
-                                <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
-                                Hapus
-                            </Button>
+                {rows.map((row, i) => {
+                    // UID baris ini — dicari ulang lewat `uids.current` SAAT
+                    // sebuah pembaruan benar-benar jalan (lihat docblock
+                    // `tulisBaris`), bukan `i` mentah yang bisa sudah basi.
+                    const uid = uids.current[i];
+
+                    return (
+                        <div key={uid} data-pp-baris className="relative mb-3 rounded-lg border bg-muted/40 p-3">
+                            <div className="mb-2 flex items-center justify-between">
+                                {prefix ? (
+                                    <span className="rounded-md bg-primary px-2 py-0.5 font-mono text-xs text-primary-foreground">
+                                        {nomor(i)}
+                                    </span>
+                                ) : (
+                                    <span />
+                                )}
+                                <Button type="button" variant="outline" size="sm" onClick={() => hapus(i)}>
+                                    <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.5} />
+                                    Hapus
+                                </Button>
+                            </div>
+
+                            {fields.map((f) => (
+                                <Kolom
+                                    key={f.key}
+                                    field={f}
+                                    sectionKey={section.key}
+                                    nama={`sections[${section.key}][${i}][${f.key}]`}
+                                    opsional={!wajib}
+                                    peringatan={f.warn_if_empty ? (f.label ?? f.key) : null}
+                                    value={row[f.key] ?? ''}
+                                    onChange={(teks) => ubahBaris(uid, f.key, teks)}
+                                    onPilih={
+                                        f.judul_ke
+                                            ? (nomor, judul) => tulisBaris(uid, { [f.key]: nomor, [f.judul_ke!]: judul })
+                                            : undefined
+                                    }
+                                />
+                            ))}
+
+                            {/* Seluruh kolom baris digabung sebagai pembanding: server
+                                mengutip kolom PERTAMA yang terisi, dan baris yang
+                                kolom pertamanya baru dikosongkan bukan berarti
+                                barisnya bergeser. */}
+                            <CatatanItem daftar={catatan?.[String(i)]} nilaiKini={Object.values(row).join(' ')} />
                         </div>
-
-                        {fields.map((f) => (
-                            <Kolom
-                                key={f.key}
-                                field={f}
-                                sectionKey={section.key}
-                                nama={`sections[${section.key}][${i}][${f.key}]`}
-                                opsional={!wajib}
-                                peringatan={f.warn_if_empty ? (f.label ?? f.key) : null}
-                                value={row[f.key] ?? ''}
-                                onChange={(teks) => ubahBaris(i, f.key, teks)}
-                                onPilih={
-                                    f.judul_ke
-                                        ? (nomor, judul) => tulisBaris(i, { [f.key]: nomor, [f.judul_ke!]: judul })
-                                        : undefined
-                                }
-                            />
-                        ))}
-
-                        {/* Seluruh kolom baris digabung sebagai pembanding: server
-                            mengutip kolom PERTAMA yang terisi, dan baris yang
-                            kolom pertamanya baru dikosongkan bukan berarti
-                            barisnya bergeser. */}
-                        <CatatanItem daftar={catatan?.[String(i)]} nilaiKini={Object.values(row).join(' ')} />
-                    </div>
-                ))}
+                    );
+                })}
 
                 <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => onChange([...rows, barisKosong(fields)])}
+                    onClick={() => onChange((lama: unknown) => [...sebagaiBaris(lama), barisKosong(fields)])}
                 >
                     <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.5} />
                     {section.add_button_label ?? '+ Tambah'}
@@ -289,6 +327,7 @@ function Kolom({
             ) : (
                 <Input
                     {...tanda}
+                    type={field.type === 'date' ? 'date' : 'text'}
                     name={nama}
                     value={value}
                     placeholder={field.placeholder ?? ''}

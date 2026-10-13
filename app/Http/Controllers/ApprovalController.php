@@ -16,7 +16,10 @@ use Inertia\Inertia;
 /**
  * Persetujuan final (PRD v2 §3). Approver = document.approver_id. Setuju ->
  * published/Berlaku; tolak (feedback wajib) -> kembali ke GL (rejected), dan
- * peninjau yang meloloskan diberi tahu (§3.4).
+ * SELURUH pihak yang meloloskannya diberi tahu (§3.4, keputusan pemilik
+ * 2026-10-09): penyusun, peninjau SH/DH (`reviewer_id`), DAN Management
+ * Development (ditemukan lewat `reviews` — satu-satunya jejaknya, karena MD
+ * tak punya kolom tersendiri spt `reviewer_id`).
  */
 class ApprovalController extends Controller
 {
@@ -243,14 +246,38 @@ class ApprovalController extends Controller
         $document->update(['status' => 'rejected']);
         $this->audit->log('document.approval_reject', $document->id, ['comment' => $summary, 'annotations' => $annotationCount]);
 
-        // Penyusun (pembuat + pembuat tambahan) & peninjau yang meloloskannya.
-        // Keduanya penting: yang satu harus memperbaiki, yang satu perlu tahu
-        // penilaiannya tak diterima.
+        /*
+        | MD yang meloloskannya (keputusan pemilik 2026-10-09): dokumen yang
+        | sampai ke PJO sudah lewat verifikasi_md, tapi `reviews` adalah
+        | SATU-SATUNYA jejaknya — beda dari SH/DH yang punya kolom
+        | `document.reviewer_id` sendiri. Dicari lewat PERAN peninjaunya
+        | (bukan menebak dari teks ringkasan "[Management Development]",
+        | yang cuma label tampilan), supaya tetap benar walau akun MD yang
+        | memeriksa bukan satu-satunya. Null bila dokumen ini tak pernah
+        | lewat MD (jenis `unggahan`/arsip tanpa tahap itu, atau
+        | FK/PX) — notify() pada null aman, tak error.
+        */
+        $peninjauMd = $document->reviews()
+            ->whereHas('reviewer', fn ($q) => $q->role(\Database\Seeders\RolePermissionSeeder::ROLE_MD))
+            ->latest()
+            ->first()?->reviewer;
+
+        // Penyusun (pembuat + pembuat tambahan), peninjau SH/DH, DAN MD yang
+        // meloloskannya — ketiganya penting: yang satu harus memperbaiki, dua
+        // lainnya perlu tahu penilaiannya tak diterima.
         Notification::send($document->penyusun(), new DocumentNotification(
             $document, "Dokumen {$document->doc_number} ditolak approver — perlu revisi.", 'bi-x-circle', 'documents.edit',
             penting: true, catatan: $summary,
         ));
         $document->reviewer?->notify(new DocumentNotification(
+            $document, "Dokumen {$document->doc_number} yang Anda loloskan ditolak approver.", 'bi-exclamation-triangle', 'documents.show',
+            penting: true, catatan: $summary,
+        ));
+        // Beda penerima dari `reviewer` di atas (akun MD BERSAMA, bukan orang
+        // yang sama) — `notify()` dua kali pada user yang SAMA cukup aman
+        // (dua baris notifikasi identik), tapi kasus itu tak pernah terjadi:
+        // `reviewer_id` selalu SH/DH, `$peninjauMd` selalu akun MD.
+        $peninjauMd?->notify(new DocumentNotification(
             $document, "Dokumen {$document->doc_number} yang Anda loloskan ditolak approver.", 'bi-exclamation-triangle', 'documents.show',
             penting: true, catatan: $summary,
         ));

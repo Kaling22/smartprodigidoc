@@ -17,14 +17,14 @@ use Illuminate\Support\Str;
  *    Untuk benar-benar menghapusnya tersedia kotak centang tersendiri.
  *
  * 2. PENYEDIA DIBATASI DAFTAR TERTUTUP. `AppServiceProvider::buatReviewer()`
- *    hanya mengenal `gemini` & `openrouter`; nama lain diam-diam jatuh ke
- *    NullReviewer, yang di layar terbaca sebagai "AI dinonaktifkan" tanpa
- *    seorang pun tahu sebabnya salah ketik.
+ *    hanya mengenal `gemini`, `openrouter` & `openai`; nama lain diam-diam
+ *    jatuh ke NullReviewer, yang di layar terbaca sebagai "AI dinonaktifkan"
+ *    tanpa seorang pun tahu sebabnya salah ketik.
  */
 class SimpanAiRequest extends FormRequest
 {
     /** Penyedia yang benar-benar punya kelas implementasinya. */
-    public const PENYEDIA = ['gemini' => 'Google Gemini', 'openrouter' => 'OpenRouter'];
+    public const PENYEDIA = ['gemini' => 'Google Gemini', 'openrouter' => 'OpenRouter', 'openai' => 'OpenAI'];
 
     public function authorize(): bool
     {

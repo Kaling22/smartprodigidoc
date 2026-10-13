@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\AuthorizesDocumentAccess;
 use App\Http\Requests\StoreDocumentRequest;
+use App\Http\Requests\UpdateDocumentTitleRequest;
 use App\Models\AuditLog;
 use App\Models\Department;
 use App\Models\Document;
@@ -778,6 +779,38 @@ class DocumentController extends Controller
 
         // Preview tetap terbawa antar langkah (revisi #2) — panel tidak kosong.
         return redirect()->route('documents.edit', [$document, 'preview' => 1])->with('status', "Langkah {$step} tersimpan.");
+    }
+
+    /**
+     * Revisi judul dokumen — celah yang dilaporkan pemilik 2026-10-10: pembuat
+     * tak punya cara mengubah judul sejak H1 layout (lihat doc-comment
+     * `Edit.tsx`) menggantikan kartu kop lama, dan tak ada satu pun rute wizard
+     * yang pernah menerima kiriman `title` (hanya `sections` berbasis schema).
+     *
+     * Rute TERPISAH dari `saveStep`/`autosave` yang disengaja: `title` kolom
+     * `documents`, bukan isi `document_contents`, dan berlaku lintas langkah —
+     * membebaninya ke satu langkah tertentu berarti pembuat harus membuka
+     * langkah itu dulu sekadar untuk mengubah judul.
+     */
+    public function updateTitle(UpdateDocumentTitleRequest $request, Document $document): RedirectResponse
+    {
+        $this->authorizeView($request, $document);
+        abort_unless($this->isEditable($document, $request), 403, 'Dokumen tidak dapat diedit pada status ini.');
+
+        $sebelum = $document->title;
+        $sesudah = $request->validated('title');
+
+        if ($sebelum === $sesudah) {
+            return back();
+        }
+
+        $document->update(['title' => $sesudah]);
+        app(AuditService::class)->log('document.title_updated', $document->id, [
+            'sebelum' => $sebelum,
+            'sesudah' => $sesudah,
+        ]);
+
+        return back()->with('status', 'Judul dokumen diperbarui.');
     }
 
     /** Autosave (D7) — persists text sections for the current step without navigating. */
