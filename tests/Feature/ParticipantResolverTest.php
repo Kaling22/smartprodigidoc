@@ -49,6 +49,21 @@ class ParticipantResolverTest extends TestCase
         $this->assertTrue($resolver->approverCandidates($doc)->every(fn ($u) => $u->hasRole('pimpinan')));
     }
 
+    public function test_head_pembuat_tidak_bisa_meninjau_dokumennya_sendiri(): void
+    {
+        $resolver = app(DocumentParticipantResolver::class);
+        $ictmd = Department::where('code', 'ICTMD')->firstOrFail();
+        $type = DocumentType::where('code', 'SOP')->firstOrFail();
+
+        $sh = $this->makeUser('section_head', $ictmd);
+        $dh = $this->makeUser('departemen_head', $ictmd);
+        $doc = app(DocumentService::class)->createDraft($sh, $type, $ictmd, 'SOP Dibuat SH');
+
+        $reviewers = $resolver->reviewerCandidates($doc)->pluck('id');
+        $this->assertFalse($reviewers->contains($sh->id), 'pembuat tidak boleh meninjau dokumennya sendiri');
+        $this->assertTrue($reviewers->contains($dh->id), 'head lain di departemen yang sama boleh meninjau');
+    }
+
     /**
      * v7 Fase 3 — JSA dari dept SELAIN SHE ditinjau GROUP LEADER SHE
      * (peninjauan K3 berbasis kompetensi, bukan hierarki). SH/DH dept pembuat

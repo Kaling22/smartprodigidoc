@@ -1,0 +1,1 @@
+import{j as t}from"./app-D9aJQ6a9.js";import{B as a}from"./AppLayout-B-U0cnXc.js";const n={active:"default",pending:"secondary",rejected:"destructive"};function c({status:e}){return t.jsx(a,{variant:n[e]??"outline",className:"capitalize",children:e})}export{c as L};

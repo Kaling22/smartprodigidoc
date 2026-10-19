@@ -71,7 +71,7 @@ class NavigasiSidebarTest extends TestCase
 
     public function test_group_leader_membuat_dokumen_dan_melihat_status_dokumen_sendiri(): void
     {
-        // GL = satu-satunya pembuat, dan "Status Dokumen"-nya berisi DUA
+        // GL = salah satu pembuat, dan "Status Dokumen"-nya berisi DUA
         // submenu: se-departemen (read-only) & buatannya sendiri.
         $this->periksa($this->aktorGl(), [
             'Dashboard',
@@ -92,19 +92,21 @@ class NavigasiSidebarTest extends TestCase
         ]);
     }
 
-    public function test_section_head_meninjau_dan_tak_punya_status_dokumen_sendiri(): void
+    public function test_section_head_membuat_dan_meninjau_dokumen(): void
     {
-        // Jebakan yang paling mudah terulang: SH/DH dulu punya DUA menu status
-        // yang isinya bertumpang tindih. Yang benar hanya "Status Dokumen Staff".
+        // SH/DH memiliki kedua fungsi: menyusun dokumennya sendiri dan meninjau
+        // dokumen departemen. Status staff tetap satu-satunya tampilan status
+        // agar daftar departemen tidak digandakan.
         $this->periksa($this->aktorSh(), [
             'Tinjau Dokumen',
+            'Dokumen Baru',
+            'Dokumen Revisi',
             'Status Dokumen Staff',
             'Dokumen Berlaku',
             'Dokumen Berlaku > Tidak Berlaku',
             'Log Dokumen > Masukan Lapangan',
         ], [
             'Status Dokumen',
-            'Dokumen Baru',
         ]);
     }
 

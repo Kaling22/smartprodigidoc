@@ -93,9 +93,9 @@ class User extends Authenticatable
     public const ROLE_DESKRIPSI = [
         'admin_it' => 'Admin IT — wewenang penuh',
         'pimpinan' => 'Pimpinan (PJO) — approver final',
-        'section_head' => 'Section Head — peninjau & approver',
-        'departemen_head' => 'Departemen Head — peninjau & approver',
-        'group_leader' => 'Group Leader — satu-satunya pembuat',
+        'section_head' => 'Section Head — pembuat, peninjau & approver',
+        'departemen_head' => 'Departemen Head — pembuat, peninjau & approver',
+        'group_leader' => 'Group Leader — pembuat dokumen',
         self::JABATAN_STAFF => 'Non-Staff — read-only (teknisi, helper, magang)',
         'management_development' => 'Management Development — peninjau tahap kedua',
     ];
@@ -318,10 +318,10 @@ class User extends Authenticatable
      *   1. izin `document.create` — pagar lama, tak dicabut sedikit pun;
      *   2. Admin IT lolos penuh (CLAUDE.md §6) — kalau tidak, satu profil yang
      *      salah sunting bisa mengunci orang yang seharusnya membetulkannya;
-     *   3. sisanya (= GL) harus punya profil yang MENYEBUT jenis itu.
+     *   3. sisanya (= GL/SH/DH) harus punya profil yang MENYEBUT jenis itu.
      *
      * Tanpa profil = tanpa wewenang, bukan "boleh semuanya". Konsekuensinya
-     * disengaja & disetujui pemilik: saat rilis SELURUH GL kehilangan wewenang
+     * disengaja: saat rilis SELURUH pembuat (GL/SH/DH) kehilangan wewenang
      * menyusun sampai Admin menetapkan profilnya.
      */
     public function bolehBuatJenis(?string $code): bool

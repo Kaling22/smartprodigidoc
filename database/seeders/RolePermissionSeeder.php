@@ -63,13 +63,14 @@ class RolePermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $p]);
         }
 
-        // Peran head (SH & DH) identik: bisa meninjau DAN menyetujui (v2 §Fase A).
+        // Peran head (SH & DH) identik: bisa menyusun, meninjau, dan menyetujui.
         //
         // `document.request_revision` DICABUT dari SH/DH (Fase C, keputusan D1 &
         // D4): yang meninjau & menyetujui tak boleh sekaligus yang memulai
         // revisi. Mereka tetap MELIHAT masukan & alasan lewat menu Log Dokumen —
         // hak lihat itu digantung pada `dashboardPenuh()`, bukan pada izin ini.
         $headPerms = [
+            'document.create', 'document.edit', 'document.submit', 'document.delete',
             'document.review', 'document.approve',
             'document.view_department', 'user.approve_registration', 'audit.view',
         ];
@@ -83,7 +84,7 @@ class RolePermissionSeeder extends Seeder
             ],
             self::ROLE_SECTION_HEAD => $headPerms,
             self::ROLE_DEPARTEMEN_HEAD => $headPerms, // wewenang sama dengan Section Head
-            // GL = SATU-SATUNYA pembuat; TIDAK meninjau. Sejak Fase C (keputusan
+            // GL = pembuat; TIDAK meninjau dokumen umum. Sejak Fase C (keputusan
             // D1) ia JUGA yang memulai revisi Tipe B & menonaktifkan dokumen —
             // dialah penyusunnya, jadi dialah yang tahu apa yang perlu diperbaiki.
             // Batasnya "hanya dokumen buatannya" TIDAK bisa dinyatakan izin

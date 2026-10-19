@@ -192,12 +192,12 @@ class ManajemenAksesTest extends TestCase
     }
 
     /**
-     * Penetapan hanya berlaku bagi Group Leader.
+     * Penetapan berlaku bagi semua jabatan pembuat (GL/SH/DH).
      *
      * Ditegakkan di controller, bukan dipercayakan kepada dropdown: formulir
      * yang dikarang bisa menembak id siapa pun.
      */
-    public function test_penetapan_ditolak_untuk_bukan_group_leader(): void
+    public function test_penetapan_menerima_head_dan_menolak_peran_bukan_pembuat(): void
     {
         $profil = AccessProfile::create([
             'nama' => 'Salah Sasaran '.Str::upper(Str::random(5)),
@@ -207,9 +207,17 @@ class ManajemenAksesTest extends TestCase
 
         $this->actingAs($this->admin())
             ->post(route('akses.tetapkan', $sh), ['access_profile_id' => $profil->id])
+            ->assertRedirect();
+
+        $this->assertSame($profil->id, $sh->fresh()->access_profile_id);
+        $this->assertTrue($sh->fresh()->bolehBuatJenis('SOP'));
+
+        $pjo = $this->orang(Roles::ROLE_PIMPINAN);
+        $this->actingAs($this->admin())
+            ->post(route('akses.tetapkan', $pjo), ['access_profile_id' => $profil->id])
             ->assertForbidden();
 
-        $this->assertNull($sh->fresh()->access_profile_id);
+        $this->assertNull($pjo->fresh()->access_profile_id);
     }
 
     /** Nama profil kembar ditolak — dua "Penyusun SOP" mustahil dibedakan. */
@@ -295,17 +303,17 @@ class ManajemenAksesTest extends TestCase
         $this->assertStringNotContainsString($kosong->nrp, $html);
 
         // Departemen.
-        $html = $lihat(['department_id' => $kosong->department_id]);
+        $html = $lihat(['department_id' => $kosong->department_id, 'q' => $kosong->nrp]);
         $this->assertStringContainsString($kosong->nrp, $html);
         $this->assertStringNotContainsString($berprofil->nrp, $html);
 
         // Tanpa Akses.
-        $html = $lihat(['access_profile_id' => 'tanpa']);
+        $html = $lihat(['access_profile_id' => 'tanpa', 'q' => $kosong->nrp]);
         $this->assertStringContainsString($kosong->nrp, $html);
         $this->assertStringNotContainsString($berprofil->nrp, $html);
 
         // Profil tertentu.
-        $html = $lihat(['access_profile_id' => $profil->id]);
+        $html = $lihat(['access_profile_id' => $profil->id, 'q' => $berprofil->nrp]);
         $this->assertStringContainsString($berprofil->nrp, $html);
         $this->assertStringNotContainsString($kosong->nrp, $html);
     }

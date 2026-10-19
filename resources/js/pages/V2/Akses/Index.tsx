@@ -33,7 +33,7 @@ import {
     PenyaringDokumen, saringDepartemen, type PilihanSaring,
 } from '@/components/v2/PenyaringDokumen';
 import { AppLayout } from '@/layouts/V2/AppLayout';
-import type { AksesIndexProps, BarisGroupLeader, ProfilAkses } from '@/types/pengguna';
+import type { AksesIndexProps, BarisPenyusun, ProfilAkses } from '@/types/pengguna';
 
 /** Penanda "tanpa nilai" untuk Radix Select, yang tak menerima string kosong. */
 const KOSONG = '*';
@@ -47,8 +47,8 @@ const KOSONG = '*';
  * mengelola datanya, dan tak satu pun aturan wewenang boleh punya salinan di
  * sini.
  *
- * Kandidat penetapan HANYA Group Leader, dan itu disaring server; `tetapkan()`
- * menolak selain GL dengan 403 walau dropdown-nya dipalsukan (P4).
+ * Kandidat penetapan adalah Group Leader, Section Head, dan Departemen Head.
+ * Server menolak peran lain dengan 403 walau form-nya dipalsukan (P4).
  *
  * Penyimpangan dari berkas V1, seluruhnya PATOKAN-GAYA-V2:
  *  · §3.7 — penyaring kartu Penetapan pindah ke `CardHeader`-nya, tabel ke
@@ -66,7 +66,7 @@ const KOSONG = '*';
  */
 export default function AksesIndex({
     profiles,
-    groupLeaders,
+    penyusun,
     departments,
     filters,
     jenis,
@@ -96,7 +96,7 @@ export default function AksesIndex({
             <KartuProfil profiles={profiles} jenis={jenis} rupa={rupa} />
             <KartuPenetapan
                 profiles={profiles}
-                groupLeaders={groupLeaders}
+                penyusun={penyusun}
                 departments={departments}
                 filters={filters}
             />
@@ -240,7 +240,7 @@ function KartuProfil({
                                 </EmptyMedia>
                                 <EmptyTitle>Belum ada profil akses.</EmptyTitle>
                                 <EmptyDescription>
-                                    Selama belum ada, tak seorang Group Leader pun bisa menyusun
+                                    Selama belum ada, tak seorang pembuat pun bisa menyusun
                                     dokumen.
                                 </EmptyDescription>
                             </EmptyHeader>
@@ -252,17 +252,18 @@ function KartuProfil({
     );
 }
 
-/** Kartu 2 — penetapan profil ke Group Leader, beserta penyaringnya. */
+/** Kartu 2 — penetapan profil ke semua jabatan pembuat, beserta penyaringnya. */
 function KartuPenetapan({
     profiles,
-    groupLeaders,
+    penyusun,
     departments,
     filters,
-}: Pick<AksesIndexProps, 'profiles' | 'groupLeaders' | 'departments' | 'filters'>) {
-    const kolom: Kolom<BarisGroupLeader>[] = [
+}: Pick<AksesIndexProps, 'profiles' | 'penyusun' | 'departments' | 'filters'>) {
+    const kolom: Kolom<BarisPenyusun>[] = [
         { judul: 'Nama', render: (g) => <span className="font-medium">{g.name}</span> },
         { judul: 'NRP', render: (g) => <span className="font-mono text-sm">{g.nrp ?? '—'}</span> },
         { judul: 'Dept', render: (g) => <Badge variant="outline">{g.dept ?? '—'}</Badge> },
+        { judul: 'Peran', render: (g) => <Badge variant="secondary">{g.role_label}</Badge> },
         {
             judul: 'Profil Akses',
             kelas: 'min-w-[280px]',
@@ -296,8 +297,8 @@ function KartuPenetapan({
                     Penetapan Akses
                 </CardTitle>
                 <CardDescription>
-                    Group Leader saja. Admin IT berwenang penuh tanpa profil; SH/DH/PJO/Non-Staff
-                    tidak menyusun dokumen sehingga tidak ditetapkan.
+                    Group Leader, Section Head, dan Departemen Head. Admin IT berwenang penuh tanpa
+                    profil; PJO dan Non-Staff tidak menyusun dokumen sehingga tidak ditetapkan.
                 </CardDescription>
                 <PenyaringDokumen
                     url={route('akses.index')}
@@ -311,7 +312,7 @@ function KartuPenetapan({
             <CardContent className="px-0">
                 <DataTable
                     kolom={kolom}
-                    baris={groupLeaders.data}
+                    baris={penyusun.data}
                     kunci={(g) => g.id}
                     kosong={
                         <Empty className="border-0">
@@ -325,8 +326,8 @@ function KartuPenetapan({
                                 </EmptyMedia>
                                 <EmptyTitle>
                                     {filters.q || filters.department_id || filters.access_profile_id
-                                        ? 'Tidak ada Group Leader yang cocok dengan filter.'
-                                        : 'Belum ada akun Group Leader.'}
+                                        ? 'Tidak ada pembuat dokumen yang cocok dengan filter.'
+                                        : 'Belum ada akun pembuat dokumen.'}
                                 </EmptyTitle>
                             </EmptyHeader>
                         </Empty>
@@ -334,7 +335,7 @@ function KartuPenetapan({
                 />
             </CardContent>
             <CardFooter className="border-t pt-6">
-                <Paginasi paginator={groupLeaders} />
+                <Paginasi paginator={penyusun} />
             </CardFooter>
         </Card>
     );
@@ -346,7 +347,7 @@ function KartuPenetapan({
  * "— Tanpa Akses —" adalah pilihan yang SAH (mencabut), bukan kegagalan
  * validasi — lihat `AccessProfileController::tetapkan()`.
  */
-function FormTetapkan({ gl, profiles }: { gl: BarisGroupLeader; profiles: ProfilAkses[] }) {
+function FormTetapkan({ gl, profiles }: { gl: BarisPenyusun; profiles: ProfilAkses[] }) {
     const { data, setData, post, processing } = useForm({
         access_profile_id: gl.access_profile_id ? String(gl.access_profile_id) : '',
     });

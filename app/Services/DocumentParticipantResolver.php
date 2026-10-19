@@ -73,6 +73,20 @@ class DocumentParticipantResolver
         return $c->unique('id')->sortBy('name')->values();
     }
 
+    /** @return array<int, int> Seluruh penyusun tak boleh menilai tulisannya sendiri. */
+    private function penyusunIds(Document $document): array
+    {
+        return $document->authors()->pluck('user_id')
+            ->push($document->created_by)->filter()->unique()->all();
+    }
+
+    private function tanpaPenyusun(Collection $c, Document $document): Collection
+    {
+        $penyusun = $this->penyusunIds($document);
+
+        return $c->reject(fn (User $u) => in_array($u->id, $penyusun, true));
+    }
+
     /**
      * Kandidat PENINJAU. PJO TIDAK PERNAH meninjau — dia hanya penyetuju.
      */
@@ -104,19 +118,18 @@ class DocumentParticipantResolver
         // sama sekali. Dulu syaratnya "dept-nya SHE"; sekarang mengikuti profil
         // akses, jadi dept mana pun yang GL-nya diberi wewenang ikut terbuka.
         if ($document->type->code === 'JSA') {
-            $penyusun = $document->authors()->pluck('user_id')
-                ->push($document->created_by)->filter()->unique()->all();
+            $penyusun = $this->penyusunIds($document);
 
             $berwenang = $this->peninjauJsa();
             $gl = $berwenang->reject(fn ($u) => in_array($u->id, $penyusun, true));
             $heads = $berwenang->contains(fn ($u) => $u->department_id === $dept)
-                ? $this->heads([$dept]) : collect();
+                ? $this->tanpaPenyusun($this->heads([$dept]), $document) : collect();
 
             return $this->sortUnique($gl->merge($heads));
         }
 
         // SOP / IK / SP → SH/DH dept sendiri.
-        return $this->sortUnique($this->heads([$dept]));
+        return $this->sortUnique($this->tanpaPenyusun($this->heads([$dept]), $document));
     }
 
     /** Kandidat PENYETUJU. PJO selalu boleh menyetujui dokumen apa pun. */
@@ -133,12 +146,15 @@ class DocumentParticipantResolver
         // memang diserahkan ke SHE, tapi pengesahannya tetap tanggung jawab
         // atasan di departemen yang membuat pekerjaan itu.
         if ($code === 'JSA') {
-            return $this->sortUnique($this->heads([$document->department_id])->merge($this->pjo()));
+            return $this->sortUnique(
+                $this->tanpaPenyusun($this->heads([$document->department_id]), $document)
+                    ->merge($this->pjo())
+            );
         }
 
         // IK / SP → SH/DH dept sendiri SAJA (satu orang meninjau sekaligus
         // menyetujui; PJO tidak terlibat) — referensi PPA-ADRO-SP/IK.
-        return $this->sortUnique($this->heads([$document->department_id]));
+        return $this->sortUnique($this->tanpaPenyusun($this->heads([$document->department_id]), $document));
     }
 
     /** Validasi: apakah $userId kandidat sah sebagai peninjau/penyetuju? */

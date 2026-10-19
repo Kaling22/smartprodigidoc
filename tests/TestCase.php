@@ -97,7 +97,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Group Leader — satu-satunya pembuat dokumen (CLAUDE.md §6).
+     * Group Leader — salah satu pembuat dokumen (bersama Section/Departemen Head).
      *
      * `$ke` memilih GL KEBERAPA di departemen itu; dibutuhkan aturan yang
      * berbicara tentang DUA GL sedepartemen (pembuat tambahan CLAUDE.md §6,

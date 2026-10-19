@@ -31,29 +31,33 @@ class AccessProfileController extends Controller
 
     public function index(Request $request)
     {
-        // Kandidat penetapan = GROUP LEADER saja. SH/DH/PJO/Non-Staff tak
-        // menyusun dokumen (PLAN-AKSES-v7 §11), dan Admin lolos tanpa
+        // Kandidat penetapan = semua jabatan pembuat (GL/SH/DH). PJO dan
+        // Non-Staff tidak menyusun dokumen, dan Admin lolos tanpa
         // profil — menampilkan mereka hanya menyodorkan kotak yang tak
         // pernah berpengaruh.
-        $gl = User::with(['department', 'accessProfile'])
-            ->whereHas('roles', fn ($q) => $q->where('name', Roles::ROLE_GROUP_LEADER));
+        $penyusun = User::with(['department', 'accessProfile'])
+            ->whereHas('roles', fn ($q) => $q->whereIn('name', [
+                Roles::ROLE_GROUP_LEADER,
+                Roles::ROLE_SECTION_HEAD,
+                Roles::ROLE_DEPARTEMEN_HEAD,
+            ]));
 
         if ($cari = $request->input('q')) {
-            $gl->where(fn ($q) => $q
+            $penyusun->where(fn ($q) => $q
                 ->where('name', 'like', "%{$cari}%")
                 ->orWhere('nrp', 'like', "%{$cari}%"));
         }
 
         if ($dept = $request->input('department_id')) {
-            $gl->where('department_id', $dept);
+            $penyusun->where('department_id', $dept);
         }
 
         // 'tanpa' bukan id profil melainkan pertanyaan "siapa yang belum
         // ditetapkan" — justru daftar itu yang dicari Admin saat memeriksa.
         if ($profil = $request->input('access_profile_id')) {
             $profil === 'tanpa'
-                ? $gl->whereNull('access_profile_id')
-                : $gl->where('access_profile_id', $profil);
+                ? $penyusun->whereNull('access_profile_id')
+                : $penyusun->where('access_profile_id', $profil);
         }
 
         return Inertia::render('Akses/Index', [
@@ -69,13 +73,14 @@ class AccessProfileController extends Controller
                     'boleh_review_jsa' => (bool) $p->boleh_review_jsa,
                     'users_count' => $p->users_count,
                 ])->values(),
-            'groupLeaders' => $gl->orderBy('name')->paginate(15)->withQueryString()
+            'penyusun' => $penyusun->orderBy('name')->paginate(15)->withQueryString()
                 ->through(fn (User $u) => [
                     'id' => $u->id,
                     'name' => $u->name,
                     'nrp' => $u->nrp,
                     'dept' => $u->department?->code,
                     'access_profile_id' => $u->access_profile_id,
+                    'role_label' => User::ROLE_LABELS[$u->getRoleNames()->first()] ?? '—',
                 ]),
             'departments' => Department::orderBy('code')->get(),
             'filters' => $request->only('q', 'department_id', 'access_profile_id'),
@@ -140,7 +145,7 @@ class AccessProfileController extends Controller
     }
 
     /**
-     * Tetapkan (atau cabut) profil seorang Group Leader.
+     * Tetapkan (atau cabut) profil seorang pembuat (GL/SH/DH).
      *
      * `access_profile_id` kosong = CABUT, dan itu bukan kegagalan validasi
      * melainkan pilihan yang sah: "— Tanpa Akses —" adalah salah satu isi
@@ -152,8 +157,11 @@ class AccessProfileController extends Controller
         // form yang dikarang bisa menembak id siapa pun. Admin sengaja
         // ditolak juga — ia lolos tanpa profil, jadi menetapkannya hanya
         // menyimpan data yang tak pernah dibaca.
-        abort_unless($user->hasRole(Roles::ROLE_GROUP_LEADER), 403,
-            'Profil akses hanya berlaku bagi Group Leader.');
+        abort_unless($user->hasAnyRole([
+            Roles::ROLE_GROUP_LEADER,
+            Roles::ROLE_SECTION_HEAD,
+            Roles::ROLE_DEPARTEMEN_HEAD,
+        ]), 403, 'Profil akses hanya berlaku bagi Group Leader, Section Head, atau Departemen Head.');
 
         $data = $request->validate([
             'access_profile_id' => ['nullable', 'exists:access_profiles,id'],

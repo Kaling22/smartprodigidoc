@@ -61,17 +61,18 @@ export interface ProfilAkses {
     users_count: number;
 }
 
-export interface BarisGroupLeader {
+export interface BarisPenyusun {
     id: number;
     name: string;
     nrp: string | null;
     dept: string | null;
     access_profile_id: number | null;
+    role_label: string;
 }
 
 export interface AksesIndexProps {
     profiles: ProfilAkses[];
-    groupLeaders: Paginator<BarisGroupLeader>;
+    penyusun: Paginator<BarisPenyusun>;
     departments: Departemen[];
     filters: { q?: string; department_id?: string; access_profile_id?: string };
     /** Kode jenis yang AKTIF — isi kotak centang profil. */

@@ -132,8 +132,8 @@ class PenggunaInertiaTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('V2/Akses/Index')
                 ->has('profiles')
-                ->has('groupLeaders.data')
-                ->has('groupLeaders.links')
+                ->has('penyusun.data')
+                ->has('penyusun.links')
                 ->has('departments')
                 ->has('filters')
                 ->has('jenis')
